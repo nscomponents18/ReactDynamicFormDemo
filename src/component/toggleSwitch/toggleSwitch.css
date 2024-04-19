@@ -1,0 +1,71 @@
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px; /* Slightly wider to accommodate labels */
+    height: 24px;
+  }
+  
+  .toggle-switch-checkbox {
+    display: none;
+  }
+  
+  .toggle-switch-label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+  }
+  
+  .toggle-switch-label:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  
+  .toggle-switch-checkbox:checked + .toggle-switch-label {
+    background-color: #2196F3;
+  }
+  
+  .toggle-switch-checkbox:checked + .toggle-switch-label:before {
+    transform: translateX(36px); /* Adjust translation for wider label */
+  }
+  
+  .toggle-switch-label:active:before {
+    width: 22px;
+  }
+  
+  .toggle-switch-inner {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 15px;
+    bottom: 0;
+    left: 15px;
+    color: white;
+    font-size: 10px;
+    font-family: Arial, sans-serif;
+    line-height: 24px;
+  }
+  
+  .toggle-switch-inner::before {
+    content: attr(data-yes);
+    position: absolute;
+    left: -10px;
+  }
+  
+  .toggle-switch-inner::after {
+    content: attr(data-no);
+    position: absolute;
+    right: -10px;
+  }  

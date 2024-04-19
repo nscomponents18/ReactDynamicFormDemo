@@ -66,6 +66,19 @@ export const getDefaultFormConfig = (): FormConfigType => {
                 colmd: 12,
                 rows: [
                     {
+                        colmd: 4,
+                        colsm: 4,
+                        key: "toggleswitch1",
+                        type: "toggleswitch",
+                        id: "toggleswitch1",
+                        label: "Select Gender"
+                    },
+                ]
+            },
+            {
+                colmd: 12,
+                rows: [
+                    {
                         colmd: 12,
                         key: "upload",
                         type: "component",
