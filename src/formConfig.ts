@@ -71,7 +71,8 @@ export const getDefaultFormConfig = (): FormConfigType => {
                         key: "toggleswitch1",
                         type: "toggleswitch",
                         id: "toggleswitch1",
-                        label: "Select Gender"
+                        label: "Select Gender",
+                        disabled: false
                     },
                 ]
             },
