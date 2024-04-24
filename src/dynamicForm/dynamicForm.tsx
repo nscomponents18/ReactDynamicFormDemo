@@ -1,15 +1,19 @@
 import React from 'react';
-import { DynamicFormSetting, ErrorType, FormControlType, ValidationRule, ValidatorType } from './types';
-import FormControl from './formControl';
-import { getColumnClassName, isEventObject, isUndefined } from './utils';
+import BodyControl from './bodyControl';
+import './dynamicForm.css';
+import FooterControl from './footerControl';
+import HeaderControl from './headerControl';
+import { ColumnType, DynamicFormSetting, ErrorType, FormControlType, ValidationRule, ValidatorFunction, ValidatorType } from './types';
+import { isEventObject, isUndefinedOrNull } from './utils';
+import { Validators } from './validators';
 
-const DynamicForm = <T extends {}>({ config, model, setModel, onChange, onClick, setRef }: DynamicFormSetting<T>): JSX.Element => {
+const DynamicForm = <T extends {}>({ header, body, footer, model, setModel, onChange, onClick, setRef, getCustomControls }: DynamicFormSetting<T>): JSX.Element => {
     //const [model, setModel] = React.useState<T>(defaultValue || {} as T);
     const [errors, setErrors] = React.useState<ErrorType>({});
 
     /*React.useEffect(() => {
         const initialData: { [key: string]: any } = { ...model };
-        config.columns.forEach(column => {
+        body.columns.forEach(column => {
             column.rows.forEach(row => {
                 if(isUndefined(initialData[row.key])) {
                     if (row.type === 'checkbox' && row.options) {
@@ -21,10 +25,10 @@ const DynamicForm = <T extends {}>({ config, model, setModel, onChange, onClick,
             });
         });
         setModel(initialData);
-    }, [config]);*/
+    }, [body]);*/
 
     /*const validateField = (key: string, value: any): string[] => {
-        const rules = config.columns.flatMap(column => column.rows.find(row => row.key === key)?.validate || []);
+        const rules = body.columns.flatMap(column => column.rows.find(row => row.key === key)?.validate || []);
         return rules.reduce((acc, rule) => {
             if (!rule.rule(value, model)) {
                 acc.push(rule.message);
@@ -37,6 +41,58 @@ const DynamicForm = <T extends {}>({ config, model, setModel, onChange, onClick,
         const errors = validators.map(validator => validator(value)).filter((error): error is { [key: string]: any } => error !== null);
         return errors;
     };*/
+
+    React.useEffect(() => {
+        if(isUndefinedOrNull(body.validationRequired)) {
+            body.validationRequired = true;
+        }
+    },[]);
+
+    React.useEffect(() => {
+        if(body.validationRequired && model) {
+            getErrors();
+        }
+    }, [model]);
+
+    const getErrors = () => {
+        const errorsClone: ErrorType = {};
+        body.columns.map((column: ColumnType) => {
+            if(column.rows && column.rows.length > 0) {
+                column.rows.map((setting: FormControlType<T>) => {
+                    let validators: ValidatorType<T,any>[] | undefined = setting.validators;
+                    if(setting.required) {
+                        if(!validators || validators.length === 0) {
+                            validators = [];
+                        }
+                        const existingVal = validators.filter(validator => {
+                            if(validator === Validators.required) {
+                                return true;
+                            }
+                            return false;
+                        });
+                        if(!existingVal || existingVal.length === 0) {
+                            //validators.push(Validators.required);
+                            //making required 1st Validator
+                            validators = [Validators.required, ...validators];
+                        }
+                    }
+                    if(validators && validators.length > 0) {
+                        const key: keyof T = setting.key;
+                        const value = model[key];
+                        const fieldErrors: ValidationRule[] = validateField(model, key, value, validators);
+                        //const fieldErrors = validateField(setting.key, val);
+                        //setErrors(prev => ({ ...prev, [setting.key]: fieldErrors }));
+                        if(fieldErrors && fieldErrors.length > 0) {
+                            errorsClone[key as string] = fieldErrors;
+                        }
+                    }
+                });
+            }
+        });
+        //always update errors so that old errors can go away
+        setErrors({...errorsClone});
+        return errorsClone;
+    };
 
     const validateField = (modelClone: T, key: keyof T, value: any, validators: ValidatorType<T,any>[]): ValidationRule[] => {
         const errors: ValidationRule[] = [];
@@ -70,11 +126,6 @@ const DynamicForm = <T extends {}>({ config, model, setModel, onChange, onClick,
         const key: keyof T = setting.key;
         //@ts-ignore
         modelClone[key] = val;
-        const validators: ValidatorType<T,any>[] = setting.validators || [];
-        const fieldErrors: ValidationRule[] = validateField(modelClone, key, value, validators);
-        //const fieldErrors = validateField(setting.key, val);
-        //setErrors(prev => ({ ...prev, [setting.key]: fieldErrors }));
-        setErrors({ ...errors, [setting.key]: fieldErrors});
         if(onChange) {
             onChange(event, key, val, modelClone);
         }
@@ -85,25 +136,46 @@ const DynamicForm = <T extends {}>({ config, model, setModel, onChange, onClick,
         //setModel(prev => ({ ...prev, [name]: val }));
     };
 
+    const handleClick = (event: React.MouseEvent<HTMLElement>, setting: FormControlType<T>) => {
+        const id = event.currentTarget.id;
+        if(onClick) {
+            onClick(event, setting.key, id, model);
+        }
+        if(setting.onClick) {
+            setting.onClick(event, setting.key, id, model);
+        }
+    };
+
     const handleRef = (setting: FormControlType<T>) => (node: any) => {
         if (node) {
             setRef && setRef(node, setting.key);
         }
     };
 
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const objErrors: ErrorType = getErrors();
+        if(!objErrors || Object.keys(objErrors).length === 0) {
+            console.log('Form submitted:', model);
+        }
+        else {
+            console.log('Form has validation errors:', objErrors);
+        }
+    };
+
+    const containerClass = 'container' + (body.containerClass ? ' ' + body.containerClass : '');
     return (
-        <div className="container">
-            {config.columns.map((column, index) => (
-                <div key={index} className={getColumnClassName(column)}>
-                    <div className="row">
-                        {column.rows.map((row: FormControlType<T>, index: number) => (
-                            <FormControl key={index} index={index} setting={row} errors={errors} model={model} handleChange={handleChange} 
-                                handleRef={handleRef} />
-                        ))}
-                    </div>
-                </div>
-            ))}
-        </div>
+        <form className={containerClass} onSubmit={handleSubmit} noValidate={body.validationRequired}>
+            <HeaderControl header={header} model={model} errors={errors} 
+                        getCustomControls={getCustomControls}
+                        handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
+            <BodyControl body={body} model={model} errors={errors} 
+                        getCustomControls={getCustomControls}
+                        handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
+            <FooterControl footer={footer} model={model} errors={errors} 
+                        getCustomControls={getCustomControls}
+                        handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
+        </form>
     );
 };
 

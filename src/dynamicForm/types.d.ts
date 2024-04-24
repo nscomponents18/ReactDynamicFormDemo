@@ -8,9 +8,24 @@ export interface OptionType {
 };
 
 export interface ColClassesType {
-    colsm?: number;
-    colmd?: number;
-    colxs?: number;
+    csscolsm?: number;
+    csscolmd?: number;
+    csscolxs?: number;
+    cssmb?: number;//for bottpm margin
+    /*mb-0: margin-bottom of 0rem (0 pixels)
+    mb-1: margin-bottom of 0.25rem (4 pixels)
+    mb-2: margin-bottom of 0.5rem (8 pixels)
+    mb-3: margin-bottom of 1rem (16 pixels)
+    mb-4: margin-bottom of 1.5rem (24 pixels)
+    mb-5: margin-bottom of 3rem (48 pixels)*/
+    containerclass?: string;
+    
+    //field starting with label will be applied to labels on control level when isLabelControlsHorizontal = true.
+    //If it has labelcolsm then col-sm will be applied. It can be overriden on inidividual control levels.
+
+    //field starting with control will be applied to Controls on control level when isLabelControlsHorizontal = true.
+    //If it has controlcolsm then col-sm will be applied. It can be overriden on inidividual control levels.
+    [key: string]: any;
 };
 
 export interface FormControlType<T> extends ColClassesType {
@@ -24,28 +39,63 @@ export interface FormControlType<T> extends ColClassesType {
     placeholder?: string;
     hide?: boolean;
     disabled?: boolean;
+    required?: boolean;
     refRequired?: boolean;
+    className?: string;
+    buttontype?: string;
     controlProps?: Record<string, any>;
     component?: React.ComponentType<any>;
     validators?: ValidatorFunction[];
 };
 
 export interface ColumnType extends ColClassesType {
-    rows: FormControlType[];
+    rows?: FormControlType[];
+    type?: string;
+    className?: string;
+    controlProps?: Record<string, any>;
 };
 
 export interface FormConfigType {
     columns: ColumnType[];
+    containerClass?: string;
+    isLabelControlsHorizontal?: boolean;
+    validationRequired?: boolean;
+};
+
+export interface HeaderConfig {
+    headerComp?: JSX.Element;
+    title?: string;
+    leftSideControls?: FormControlType[];
+    rightSideControls?: FormControlType[];
+    cssTitleCon?: string;
+    cssTitle?: string;
+    cssNonTitleCon?: string;
+    cssLeftSideCon?: string;
+    cssRightSideCon?: string;
+};
+
+export interface FooterConfig {
+    footerComp?: JSX.Element;
+    leftSideControls?: FormControlType[];
+    rightSideControls?: FormControlType[];
+    centerControls?: FormControlType[];
+    cssCon?: string;
+    cssLeftSideCon?: string;
+    cssRightSideCon?: string;
+    cssCenterCon?: string;
 };
 
 export interface DynamicFormSetting<T> {
-    config: FormConfigType;
+    header?: HeaderConfig,
+    body: FormConfigType;
+    footer?: FooterConfig;
     //defaultValue?: T;
     model: T;
     setModel: (value: T | ((prevState: T) => T)) => void;
     onChange?: (event: ChangeEvent<any>,key: keyof T, value: string | boolean, model: T) => void;
-    onClick?: (event: React.MouseEvent<HTMLButtonElement>,key: keyof T, model: T) => void;
+    onClick?: (event: React.MouseEvent<HTMLElement>,key: keyof T, id: string, model: T) => void;
     setRef? (instance: any, key: keyof T): void;
+    getCustomControls?: CustomControlCallback<T>;
 };
 
 
@@ -78,4 +128,16 @@ export type ValidatorType<T,K> = (value: K, model: T, key: keyof T) => Validatio
 //export type ValidatorTypeForString = ValidatorType<{ [key: string]: string }, any>;
 export type ErrorType = { [key: string]: ValidationRule[] };
 export type ValidatorFunction = <T, K>(value: K, model: T, key: keyof T) => ValidationRule;
+
+export type CustomControlCallback<T> = (
+    controlType: string,
+    model: T,
+    index: number,
+    errors: ErrorType,
+    handleChange: (event: unknown, setting: FormControlType<T>) => void,
+    handleRef: (setting: FormControlType<T>) => (node: any) => void,
+    handleClick: (event: React.MouseEvent<HTMLElement>, setting: FormControlType<T>) => void,
+    setting: FormControlType<T>,
+    parentSetting: ColClassesType | null,
+) => JSX.Element | null;
 

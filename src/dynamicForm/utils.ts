@@ -1,4 +1,5 @@
-import { ColClassesType } from "./types";
+import { COL, CONTAINER_INITIAL } from "./constants";
+import { ColClassesType, ErrorType, FormControlType, ValidationRule } from "./types";
 
 export const isUndefinedOrNull = (value: unknown): value is null | undefined => {
     if (value == null) {
@@ -18,6 +19,10 @@ export const isBoolean = (value: unknown): value is boolean => {
   return typeof value === 'boolean';
 };
 
+export const isString = (value: unknown): value is string => {
+  return typeof value === 'string';
+};
+
 export const isEventObject = (eventCandidate: unknown): eventCandidate is Event | React.SyntheticEvent => {
   return typeof eventCandidate === 'object' &&
     eventCandidate !== null &&
@@ -30,24 +35,117 @@ export const isEventObject = (eventCandidate: unknown): eventCandidate is Event 
 }
 
 
-export const getColumnClassName = (colClassesType: ColClassesType): string => {
-  let cssClass: string = '';
-  if(colClassesType.colsm) {
-    cssClass += `col-sm-${colClassesType.colsm}`;
+export const getContainerColumnClassName = (colClassesType: ColClassesType): string => {
+  let cssClass: string[] = [];
+  cssClass = getClassNamesForInitails(colClassesType, null , CONTAINER_INITIAL, COL);
+  if(colClassesType.containerclass) {
+    cssClass.push(colClassesType.containerclass);
   }
-  if(cssClass.length > 0) {
-    cssClass += ' ';
+  return cssClass.join(' ');
+};
+
+export const getControlClassName = (colClassesType: ColClassesType, parentColClassesType: ColClassesType, cssInitial: string, classInitial: string): string => {
+  let cssClass: string[] = [];
+  cssClass = getClassNamesForInitails(colClassesType, parentColClassesType, cssInitial, classInitial);
+  if(colClassesType.containerclass) {
+    cssClass.push(colClassesType.containerclass);
   }
-  if(colClassesType.colmd) {
-    cssClass += `col-md-${colClassesType.colmd}`;
+  return cssClass.join(' ');
+};
+
+
+export const getClassNamesForInitails = (colClassesType: ColClassesType, parentColClassesType: ColClassesType | null, cssInitial: string, classInitial: string) => {
+  const cssClass: string[] = [];
+  const childMap: Record<string, number> = {};
+  Object.keys(colClassesType).forEach((origKey: string) => {
+    const val = colClassesType[origKey as keyof ColClassesType];
+    //colClassesType also has other keys for interfaces 
+    if(!isUndefinedOrNull(val) && origKey.startsWith(cssInitial)) {
+      const key = getClassNameFromProperty(origKey, cssInitial, classInitial);
+      cssClass.push(`${key}-${val}`);
+      childMap[origKey] = val;
+      /*key = key.substring(cssInitial.length).toLowerCase();
+      if(key.startsWith(classInitial)) {
+        let size = key.substring(classInitial.length);
+        if(size) {
+          size += '-';
+        }
+        cssClass.push(`${classInitial}-${size}${val}`);
+      }
+      else {
+        cssClass.push(`${key}-${val}`);
+      }*/
+    }
+  });
+  if(parentColClassesType) {
+    Object.keys(parentColClassesType).forEach((origKey: string) => {
+      const val = parentColClassesType[origKey as keyof ColClassesType];
+      if(!isUndefinedOrNull(val) && origKey.startsWith(cssInitial) && isUndefinedOrNull(childMap[origKey])) {
+        const key = getClassNameFromProperty(origKey, cssInitial, classInitial);
+        cssClass.push(`${key}-${val}`);
+      }
+    });
   }
-  if(cssClass.length > 0) {
-    cssClass += ' ';
-  }
-  if(colClassesType.colxs) {
-    cssClass += `col-xs-${colClassesType.colxs}`;
-  }
-  cssClass = cssClass.trim();
   return cssClass;
 };
+
+export const getClassNameFromProperty = (key: string, cssInitial: string, classInitial: string) => {
+  key = key.substring(cssInitial.length).toLowerCase();
+  if(key.startsWith(classInitial)) {
+    let size = key.substring(classInitial.length);
+    return `${classInitial}-${size}`;
+  }
+  return key;
+};
+
+export const getClassNameForControl = <T>(defaultClass: string, setting: FormControlType<T>, errors: ErrorType): string => {
+  const cssClass: string[] = [];
+  if(defaultClass) {
+    cssClass.push(defaultClass);
+  }
+  if(setting.className) {
+    cssClass.push(setting.className);
+  }
+  const key: string = setting.key as string;
+  if(errors[key] && errors[key].length > 0) {
+    cssClass.push('is-invalid');
+  }
+  return cssClass.join(' ');
+};
+
+export const getKeyForControlMap = (controls: { [key: string]: JSX.Element }, controlType: string): string => {
+  if(controls[controlType]) {
+      return controlType;
+  }
+  let retVal: string = 'default';
+  Object.keys(controls).forEach((key: string) => {
+      if(key.includes(',')) {
+          const arrKeys: string[] = key.split(",");
+          if(arrKeys.includes(controlType)) {
+              retVal = key;
+              return;
+          }
+      }
+  });
+  return retVal;
+};
+
+export const getClassNames = (defaultClass: string | null, extraClasses: string | string[] | undefined | null): string => {
+  const cssClass: string[] = [];
+  if(defaultClass) {
+    cssClass.push(defaultClass);
+  }
+  if(extraClasses) {
+    if(isString(extraClasses)) {
+      extraClasses = [extraClasses];
+    }
+    extraClasses.forEach((cls: string) => {
+      if(cls) {
+        cssClass.push(cls);
+      }
+    });
+  }
+  return cssClass.join(' ');
+};
+
 

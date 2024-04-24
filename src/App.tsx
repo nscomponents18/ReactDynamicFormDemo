@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import DynamicForm from './dynamicForm/dynamicForm';
-import { FormConfigType, FormControlType } from './dynamicForm/types';
-import { IDataType, getDefaultFormConfig } from './formConfig';
+import { ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from './dynamicForm/types';
+import { IDataType, getDefaultFooter, getDefaultFormConfig, getDefaultHeader } from './formConfig';
+import ToggleSwitch from './component/toggleSwitch/toggleSwitch';
 
 
 
@@ -11,9 +12,12 @@ function App() {
   const employeeRef = React.useRef<HTMLSelectElement | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
-  const defaultVal: IDataType = {employee: '', role: "Employee", gender: "female"};
+  const defaultVal: IDataType = {employee: '', role: "Employee", gender: "female", areyouworking: false};
   const [state, setState] = React.useState<IDataType>(defaultVal);
-  const [formConfig, setFormConfig] = React.useState<FormConfigType>({ ...getDefaultFormConfig() });
+  const [headerConfig, setHeaderConfig] = React.useState<HeaderConfig>({ ...getDefaultHeader() });
+  const [formConfig, setFormConfig] = React.useState<FormConfigType>({ ...getDefaultFormConfig(false) });
+  const [footerConfig, setFooterConfig] = React.useState<FooterConfig>({ ...getDefaultFooter() });
+
 
   React.useEffect(() => {
     const employeeOptions = [
@@ -22,7 +26,7 @@ function App() {
       { key: 3, label: "Employee 3", value: "employee3" },
     ];
     const formConfigClone = {...formConfig};
-    formConfigClone.columns[0].rows[0].options = employeeOptions;
+    formConfigClone.columns[0].rows![0].options = employeeOptions;
     setFormConfig(formConfigClone);
     const stateClone = { ...state, employee: employeeOptions[1].value };
     setState(stateClone);
@@ -44,19 +48,27 @@ function App() {
     console.log(`Change happened for key ${key} with value ${value}`);
     const formConfigClone = {...formConfig};
     if(key === 'employee') {
-      const gender: FormControlType<IDataType> = formConfigClone.columns[0].rows.filter(item => item.key === 'gender')[0];
-      gender.hide = false;
-      if(value === 'employee1') {
-        //setState({...model, gender: 'female'});
-        model.gender = 'female';
+      let gender: FormControlType<IDataType> | undefined;
+      formConfigClone.columns.map((column: ColumnType) => {
+        if(!gender) {
+          gender = column.rows?.filter(item => item.key === 'gender')[0];
+        }
+      });
+      if(gender) {
+        gender.hide = false;
+        if(value === 'employee1') {
+          //setState({...model, gender: 'female'});
+          model.gender = 'female';
+        }
+        else if(value === 'employee2') {
+          gender.hide = true;
+        }
+        else {
+          //setState({...model, gender: 'male'});
+          model.gender = 'male';
+        }
       }
-      else if(value === 'employee2') {
-        gender.hide = true;
-      }
-      else {
-        //setState({...model, gender: 'male'});
-        model.gender = 'male';
-      }
+      
       model.role = value as string;
     }
     setFormConfig(formConfigClone);
@@ -70,10 +82,32 @@ function App() {
       fileInputRef.current = (ref as HTMLInputElement);
     }
   };
+
+  const getControl: CustomControlCallback<IDataType> = (
+    controlType: string,
+    model: IDataType,
+    index: number,
+    errors: ErrorType,
+    handleChange: (event: unknown, setting: FormControlType<IDataType>) => void,
+    handleRef: (setting: FormControlType<IDataType>) => (node: any) => void,
+    handleClick: (event: React.MouseEvent<HTMLElement>, setting: FormControlType<IDataType>) => void,
+    setting: FormControlType<IDataType>,
+    parentSetting: ColClassesType | null,
+  ): JSX.Element | null => {
+    if(controlType === 'toggleswitch') {
+      return <ToggleSwitch 
+              disabled={setting.disabled}
+              name={setting.name} id={setting.id} 
+              checked={(model[setting.key] as boolean)} 
+              onChange={(e: boolean) => handleChange(e, setting)}  />
+    }
+    return null;
+  };
   
   return (
     <div>
-        <DynamicForm config={formConfig} model={state} setModel={setState} onChange={handleChange} setRef={setRefs} />
+        <DynamicForm header={headerConfig} body={formConfig} footer={footerConfig} model={state} setModel={setState} onChange={handleChange} setRef={setRefs} 
+          getCustomControls={getControl} />
     </div>
   );
 }
