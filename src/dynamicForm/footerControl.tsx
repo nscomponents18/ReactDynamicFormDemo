@@ -1,10 +1,10 @@
 import React from 'react';
-import { CustomControlCallback, ErrorType, FooterConfig, FormControlType, HeaderConfig } from './types';
-import FormControl from './formControl';
-import { getControl, renderControl, renderSides } from './controlsHelper';
-import { getClassNames } from './utils';
+import { renderSides } from './controlsHelper';
+import { CustomControlCallback, ErrorType, FooterConfig, FormControlType } from './types';
+import { asString, getClassNames } from './utils';
 
 interface FooterControlProps<T> {
+    cssDefaults: Record<string,string | boolean | Record<string,unknown>>;
     footer?: FooterConfig | undefined;
     model: T;
     errors: ErrorType;
@@ -14,7 +14,7 @@ interface FooterControlProps<T> {
     handleClick: (event: React.MouseEvent<HTMLElement>, setting: FormControlType<T>) => void;
 }
 
-const FooterControl = <T extends {}>({ footer, model, getCustomControls, 
+const FooterControl = <T extends {}>({cssDefaults, footer, model, getCustomControls, 
                     errors, handleChange, handleRef, handleClick }: FooterControlProps<T>): JSX.Element => {
     
     let side = 0;
@@ -26,6 +26,7 @@ const FooterControl = <T extends {}>({ footer, model, getCustomControls,
         } 
     }
 
+    const cssFooter: Record<string,unknown> = cssDefaults.footer as Record<string,unknown>;
     return (
         <>
             {footer && (
@@ -34,14 +35,14 @@ const FooterControl = <T extends {}>({ footer, model, getCustomControls,
                         footer.footerComp
                     )}
                     {!footer.footerComp && (
-                        <div className={getClassNames('d-flex w-100 justify-content-between pt-1 mb-3', footer.cssCon)}>
-                            {renderSides(footer.leftSideControls,'d-flex flex-row gap-1 justify-content-start w-' + sideWidth,
+                        <div className={getClassNames(asString(cssFooter.container), footer.cssCon)}>
+                            {renderSides(cssDefaults, footer.leftSideControls,(cssFooter.leftSideContainer as (sideWidth: number) => string)(sideWidth),
                                 footer.cssLeftSideCon, model, errors, handleChange, handleRef, handleClick, getCustomControls)
                             }
-                            {renderSides(footer.centerControls,'d-flex flex-row gap-1 justify-content-center w-' + sideWidth,
+                            {renderSides(cssDefaults, footer.centerControls,(cssFooter.centerContainer as (sideWidth: number) => string)(sideWidth),
                                 footer.cssLeftSideCon, model, errors, handleChange, handleRef, handleClick, getCustomControls)
                             }
-                            {renderSides(footer.rightSideControls,'d-flex flex-row gap-1 justify-content-end w-' + sideWidth,
+                            {renderSides(cssDefaults, footer.rightSideControls,(cssFooter.rightSideContainer as (sideWidth: number) => string)(sideWidth),
                                 footer.cssRightSideCon, model, errors, handleChange, handleRef, handleClick, getCustomControls)
                             }
                         </div>

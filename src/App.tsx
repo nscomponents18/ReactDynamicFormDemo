@@ -3,8 +3,9 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import DynamicForm from './dynamicForm/dynamicForm';
 import { ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from './dynamicForm/types';
-import { IDataType, getDefaultFooter, getDefaultFormConfig, getDefaultHeader } from './formConfig';
+import { IDataType, defaultValDataType, getDefaultFooter, getDefaultFormConfig, getDefaultHeader } from './formConfig';
 import ToggleSwitch from './component/toggleSwitch/toggleSwitch';
+import { CheckoutDefaultValue, ICheckout, getCustomControls, getFooterForCheckout, getFormConfigForCheckout, getHeaderForCheckout } from './formConfigCheckout';
 
 
 
@@ -12,11 +13,14 @@ function App() {
   const employeeRef = React.useRef<HTMLSelectElement | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
-  const defaultVal: IDataType = {employee: '', role: "Employee", gender: "female", areyouworking: false};
-  const [state, setState] = React.useState<IDataType>(defaultVal);
+
+  const [state, setState] = React.useState<IDataType>(defaultValDataType);
   const [headerConfig, setHeaderConfig] = React.useState<HeaderConfig>({ ...getDefaultHeader() });
-  const [formConfig, setFormConfig] = React.useState<FormConfigType>({ ...getDefaultFormConfig(false) });
+  const [formConfig, setFormConfig] = React.useState<FormConfigType>({ ...getDefaultFormConfig(true) });
   const [footerConfig, setFooterConfig] = React.useState<FooterConfig>({ ...getDefaultFooter() });
+
+  const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType>({ ...getFormConfigForCheckout() });
+  const [stateCheckout, setStateCheckout] = React.useState<ICheckout>(CheckoutDefaultValue);
 
 
   React.useEffect(() => {
@@ -103,12 +107,26 @@ function App() {
     }
     return null;
   };
+
+  const handleCheckoutChange = (event: any,key: string, value: any, model: ICheckout) => {
+  };
   
   return (
-    <div>
-        <DynamicForm header={headerConfig} body={formConfig} footer={footerConfig} model={state} setModel={setState} onChange={handleChange} setRef={setRefs} 
-          getCustomControls={getControl} />
-    </div>
+    <>
+      <div style={{marginBottom: "10px"}}>
+          <DynamicForm header={headerConfig} body={formConfig} footer={footerConfig} model={state} setModel={setState} onChange={handleChange} 
+            setRef={setRefs} getCustomControls={getControl} />
+      </div>
+      <div className='container px-0'>
+        <div className='row g-5'>
+          <div className="col-md-7 col-lg-8">
+            <DynamicForm header={getHeaderForCheckout()} body={bodyCheckout} footer={getFooterForCheckout()} model={stateCheckout} 
+              setModel={setStateCheckout} onChange={handleCheckoutChange} setRef={setRefs} validateOnSubmit={true}
+              getCustomControls={getCustomControls}/>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 

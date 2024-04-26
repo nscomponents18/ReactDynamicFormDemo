@@ -1,10 +1,10 @@
 import React from 'react';
+import { renderSides } from './controlsHelper';
 import { CustomControlCallback, ErrorType, FormControlType, HeaderConfig } from './types';
-import FormControl from './formControl';
-import { getControl, renderControl, renderSides } from './controlsHelper';
-import { getClassNames } from './utils';
+import { asString, getClassNames } from './utils';
 
 interface HeaderControlProps<T> {
+    cssDefaults: Record<string,string | boolean | Record<string,unknown>>;
     header?: HeaderConfig;
     model: T;
     errors: ErrorType;
@@ -14,7 +14,7 @@ interface HeaderControlProps<T> {
     handleClick: (event: React.MouseEvent<HTMLElement>, setting: FormControlType<T>) => void;
 }
 
-const HeaderControl = <T extends {}>({ header, model, getCustomControls, 
+const HeaderControl = <T extends {}>({cssDefaults, header, model, getCustomControls, 
                     errors, handleChange, handleRef, handleClick }: HeaderControlProps<T>): JSX.Element => {
     
     let side = 0;
@@ -26,6 +26,7 @@ const HeaderControl = <T extends {}>({ header, model, getCustomControls,
         } 
     }
 
+    const cssHeader: Record<string,unknown> = cssDefaults.header as Record<string,unknown>;
     return (
         <>
             {header && (
@@ -34,15 +35,15 @@ const HeaderControl = <T extends {}>({ header, model, getCustomControls,
                         header.headerComp
                     )}
                     {!header.headerComp && (
-                        <div className='d-flex w-100 pt-1 mb-3'>
-                            <div className={getClassNames('w-20', header.cssTitleCon)}>
-                                <h3 className={getClassNames('h3', header.cssTitle)}>{header.title}</h3>
+                        <div className={asString(cssHeader.container)}>
+                            <div className={getClassNames(asString(cssHeader.titleContainer), header.cssTitleCon)}>
+                                <h3 className={getClassNames(asString(cssHeader.title), header.cssTitle)}>{header.title}</h3>
                             </div>
-                            <div className={getClassNames('d-flex w-80 justify-content-between', header.cssNonTitleCon)}>
-                                {renderSides(header.leftSideControls,'d-flex flex-row gap-1 justify-content-start w-' + sideWidth,
+                            <div className={getClassNames(asString(cssHeader.nonTitleContainer), header.cssNonTitleCon)}>
+                                {renderSides(cssDefaults, header.leftSideControls, (cssHeader.leftSideContainer as (sideWidth: number) => string)(sideWidth),
                                     header.cssLeftSideCon, model, errors, handleChange, handleRef, handleClick, getCustomControls)
                                 }
-                                {renderSides(header.rightSideControls,'d-flex flex-row gap-1 justify-content-end w-' + sideWidth,
+                                {renderSides(cssDefaults, header.rightSideControls,(cssHeader.rightSideContainer as (sideWidth: number) => string)(sideWidth),
                                     header.cssRightSideCon, model, errors, handleChange, handleRef, handleClick, getCustomControls)
                                 }
                             </div>
@@ -51,7 +52,6 @@ const HeaderControl = <T extends {}>({ header, model, getCustomControls,
                 </>
             )}
         </>
-        
     )
 };
 export default HeaderControl;

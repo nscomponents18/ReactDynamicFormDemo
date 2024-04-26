@@ -62,37 +62,44 @@ import { ValidationRule, ValidatorType } from "./types";
 import { isUndefinedOrNull } from "./utils";
 
 export const Validators = {
-    required: <T, K>(value: K, model: T, key: keyof T): ValidationRule => {
-        const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);
-        const valid = val.trim() !== '';
-        return {
-            type: "required", 
-            valid: valid,
-            message: valid ? "" : "This field is required."
-        };
-    },
-    minLength: <T extends { [key: string]: string }, K extends string | undefined | null>(minLength: number): ValidatorType<T, K> => {
-        return <T extends { [key: string]: string },K>(value: K, model: T, key: keyof T): ValidationRule => {
+    required: <T extends { [key: string]: string }, K extends string | undefined | null>(message?: string): ValidatorType<T, K> => ({
+        type: "required",
+        validate: (value: K, model: T, key: keyof T): ValidationRule => {
+            const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);
+            const valid = val.trim() !== '';
+            return {
+                type: "required",
+                valid: valid,
+                message: valid ? "" : message || 'This field is required.'
+            };
+        }
+    }),
+    minLength: <T extends { [key: string]: any }, K extends string | undefined | null>(minLength: number, message?: string): ValidatorType<T, K> => ({
+        type: "minLength",
+        validate: (value: K, model: T, key: keyof T): ValidationRule => {
             const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);
             const valid = val.length >= minLength;
             return {
-                type: "minLength", 
+                type: "minLength",
                 valid: valid,
-                message: valid ? "" : `Minimum length of ${minLength} is required. Current length is ${val.length}.`,
+                message: valid ? "" : message || `Minimum length of ${minLength} is required. Current length is ${val.length}.`,
                 requiredLength: minLength,
                 actualLength: val.length
             };
-        };
-    },
-    email: <T,K>(value: K, model: T, key: keyof T): ValidationRule => {
-        const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);
-        const emailRegex = /^\S+@\S+\.\S+$/;
-        const valid = emailRegex.test(val);
-        return {
-            type: "email", 
-            valid: valid,
-            message: valid ? "" : "Invalid email format."
-        };
-    }
+        }
+    }),
+    email: <T extends { [key: string]: string }, K extends string | undefined | null>(message?: string): ValidatorType<T, K> => ({
+        type: "email",
+        validate: (value: K, model: T, key: keyof T): ValidationRule => {
+            const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);
+            const emailRegex = /^\S+@\S+\.\S+$/;
+            const valid = emailRegex.test(val);
+            return {
+                type: "email",
+                valid: valid,
+                message: valid ? "" : message || 'Invalid email format.'
+            };
+        }
+    })
 };
 

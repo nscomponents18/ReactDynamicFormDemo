@@ -1,11 +1,11 @@
 import React from "react";
 
-export interface OptionType {
+/*export interface OptionType {
     key: number;
     label: string;
     value: string;
     [propName: string]: any;
-};
+};*/
 
 export interface ColClassesType {
     csscolsm?: number;
@@ -35,7 +35,9 @@ export interface FormControlType<T> extends ColClassesType {
     name?: string;
     label?: string;
     onChange?: (event: ChangeEvent<any>,value: string | boolean, model: T) => void;
-    options?: OptionType[];
+    options?: Record<string, unknown>[];
+    labelField?: string;
+    valueField?: string;
     placeholder?: string;
     hide?: boolean;
     disabled?: boolean;
@@ -43,9 +45,10 @@ export interface FormControlType<T> extends ColClassesType {
     refRequired?: boolean;
     className?: string;
     buttontype?: string;
+    additionalInfo?: string;
     controlProps?: Record<string, any>;
     component?: React.ComponentType<any>;
-    validators?: ValidatorFunction[];
+    validators?: ValidatorType<T, any>[];
 };
 
 export interface ColumnType extends ColClassesType {
@@ -86,11 +89,12 @@ export interface FooterConfig {
 };
 
 export interface DynamicFormSetting<T> {
+    cssFramework?: string;
     header?: HeaderConfig,
     body: FormConfigType;
     footer?: FooterConfig;
-    //defaultValue?: T;
     model: T;
+    validateOnSubmit?: boolean;
     setModel: (value: T | ((prevState: T) => T)) => void;
     onChange?: (event: ChangeEvent<any>,key: keyof T, value: string | boolean, model: T) => void;
     onClick?: (event: React.MouseEvent<HTMLElement>,key: keyof T, id: string, model: T) => void;
@@ -124,7 +128,10 @@ export interface ValidationRule {
 };*/
 
 //export type ValidatorType<T> = (value: T) => ValidationResult | null;
-export type ValidatorType<T,K> = (value: K, model: T, key: keyof T) => ValidationRule;
+export type ValidatorType<T,K> = {
+    validate: (value: K, model: T, key: keyof T) => ValidationRule;
+    type: string;
+};
 //export type ValidatorTypeForString = ValidatorType<{ [key: string]: string }, any>;
 export type ErrorType = { [key: string]: ValidationRule[] };
 export type ValidatorFunction = <T, K>(value: K, model: T, key: keyof T) => ValidationRule;

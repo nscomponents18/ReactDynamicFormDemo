@@ -1,5 +1,5 @@
 import { COL, CONTAINER_INITIAL } from "./constants";
-import { ColClassesType, ErrorType, FormControlType, ValidationRule } from "./types";
+import { ColClassesType, ErrorType, FormControlType } from "./types";
 
 export const isUndefinedOrNull = (value: unknown): value is null | undefined => {
     if (value == null) {
@@ -64,17 +64,6 @@ export const getClassNamesForInitails = (colClassesType: ColClassesType, parentC
       const key = getClassNameFromProperty(origKey, cssInitial, classInitial);
       cssClass.push(`${key}-${val}`);
       childMap[origKey] = val;
-      /*key = key.substring(cssInitial.length).toLowerCase();
-      if(key.startsWith(classInitial)) {
-        let size = key.substring(classInitial.length);
-        if(size) {
-          size += '-';
-        }
-        cssClass.push(`${classInitial}-${size}${val}`);
-      }
-      else {
-        cssClass.push(`${key}-${val}`);
-      }*/
     }
   });
   if(parentColClassesType) {
@@ -92,8 +81,11 @@ export const getClassNamesForInitails = (colClassesType: ColClassesType, parentC
 export const getClassNameFromProperty = (key: string, cssInitial: string, classInitial: string) => {
   key = key.substring(cssInitial.length).toLowerCase();
   if(key.startsWith(classInitial)) {
-    let size = key.substring(classInitial.length);
-    return `${classInitial}-${size}`;
+    const size = key.substring(classInitial.length);
+    if(size) {
+      return `${classInitial}-${size}`;
+    }
+    return classInitial;
   }
   return key;
 };
@@ -146,6 +138,22 @@ export const getClassNames = (defaultClass: string | null, extraClasses: string 
     });
   }
   return cssClass.join(' ');
+};
+
+export const asString = (val: unknown) => {
+  return (val as string);
+};
+
+export const asBoolean = (val: unknown) => {
+  return (val as boolean);
+};
+
+export const doRenderLabel = <T,>(setting: FormControlType<T>): boolean => {
+  const typeWithNoLabels: string[] = ['checkbox', 'header'];
+  if(setting.label && !typeWithNoLabels.includes(setting.type)) {
+    return true;
+  }
+  return false;
 };
 
 

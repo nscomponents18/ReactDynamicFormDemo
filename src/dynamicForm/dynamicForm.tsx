@@ -6,10 +6,12 @@ import HeaderControl from './headerControl';
 import { ColumnType, DynamicFormSetting, ErrorType, FormControlType, ValidationRule, ValidatorFunction, ValidatorType } from './types';
 import { isEventObject, isUndefinedOrNull } from './utils';
 import { Validators } from './validators';
+import { CSS_FRAMEWORK } from './constants';
 
-const DynamicForm = <T extends {}>({ header, body, footer, model, setModel, onChange, onClick, setRef, getCustomControls }: DynamicFormSetting<T>): JSX.Element => {
+const DynamicForm = <T extends {}>({cssFramework, header, body, footer, model, setModel, validateOnSubmit, onChange, onClick, setRef, getCustomControls }: DynamicFormSetting<T>): JSX.Element => {
     //const [model, setModel] = React.useState<T>(defaultValue || {} as T);
     const [errors, setErrors] = React.useState<ErrorType>({});
+    const [cssDefaults, setCssDefaults] = React.useState<Record<string,string | boolean | Record<string,unknown>>>({});
 
     /*React.useEffect(() => {
         const initialData: { [key: string]: any } = { ...model };
@@ -46,10 +48,18 @@ const DynamicForm = <T extends {}>({ header, body, footer, model, setModel, onCh
         if(isUndefinedOrNull(body.validationRequired)) {
             body.validationRequired = true;
         }
+        if(!cssFramework) {
+            cssFramework = 'bootstrap';
+        }
+        if(!CSS_FRAMEWORK[cssFramework]) {
+            throw new Error(`CSS Framework ${cssFramework} is not found. Please select a available framework`);
+        }
+        const isLabelControlsHorizontal: boolean = isUndefinedOrNull(body.isLabelControlsHorizontal) ? false : body.isLabelControlsHorizontal;
+        setCssDefaults({...CSS_FRAMEWORK[cssFramework], isLabelControlsHorizontal: isLabelControlsHorizontal });
     },[]);
 
     React.useEffect(() => {
-        if(body.validationRequired && model) {
+        if(body.validationRequired && !validateOnSubmit && model) {
             getErrors();
         }
     }, [model]);
@@ -59,13 +69,13 @@ const DynamicForm = <T extends {}>({ header, body, footer, model, setModel, onCh
         body.columns.map((column: ColumnType) => {
             if(column.rows && column.rows.length > 0) {
                 column.rows.map((setting: FormControlType<T>) => {
-                    let validators: ValidatorType<T,any>[] | undefined = setting.validators;
+                    let validators: ValidatorType<T, any>[] | undefined = setting.validators;
                     if(setting.required) {
                         if(!validators || validators.length === 0) {
                             validators = [];
                         }
                         const existingVal = validators.filter(validator => {
-                            if(validator === Validators.required) {
+                            if(validator.type === "required") {
                                 return true;
                             }
                             return false;
@@ -73,7 +83,7 @@ const DynamicForm = <T extends {}>({ header, body, footer, model, setModel, onCh
                         if(!existingVal || existingVal.length === 0) {
                             //validators.push(Validators.required);
                             //making required 1st Validator
-                            validators = [Validators.required, ...validators];
+                            validators = [Validators.required(), ...validators];
                         }
                     }
                     if(validators && validators.length > 0) {
@@ -97,7 +107,7 @@ const DynamicForm = <T extends {}>({ header, body, footer, model, setModel, onCh
     const validateField = (modelClone: T, key: keyof T, value: any, validators: ValidatorType<T,any>[]): ValidationRule[] => {
         const errors: ValidationRule[] = [];
         validators.forEach((validator: ValidatorType<T,any>)  => {
-            const error: ValidationRule = validator(value, modelClone, key);
+            const error: ValidationRule = validator.validate(value, modelClone, key);
             if(error && !error.valid) {
                 errors.push(error);
             }
@@ -163,18 +173,22 @@ const DynamicForm = <T extends {}>({ header, body, footer, model, setModel, onCh
         }
     };
 
-    const containerClass = 'container' + (body.containerClass ? ' ' + body.containerClass : '');
+    const containerClass = cssDefaults.container + (body.containerClass ? ' ' + body.containerClass : '');
     return (
         <form className={containerClass} onSubmit={handleSubmit} noValidate={body.validationRequired}>
-            <HeaderControl header={header} model={model} errors={errors} 
-                        getCustomControls={getCustomControls}
-                        handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
-            <BodyControl body={body} model={model} errors={errors} 
-                        getCustomControls={getCustomControls}
-                        handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
-            <FooterControl footer={footer} model={model} errors={errors} 
-                        getCustomControls={getCustomControls}
-                        handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
+            {(cssDefaults && Object.keys(cssDefaults).length > 0) && (
+                <>
+                    <HeaderControl cssDefaults={cssDefaults} header={header} model={model} errors={errors} 
+                                getCustomControls={getCustomControls}
+                                handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
+                    <BodyControl cssDefaults={cssDefaults} body={body} model={model} errors={errors} 
+                                getCustomControls={getCustomControls}
+                                handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
+                    <FooterControl cssDefaults={cssDefaults} footer={footer} model={model} errors={errors} 
+                                getCustomControls={getCustomControls}
+                                handleChange={handleChange} handleRef={handleRef} handleClick={handleClick} />
+                 </>
+            )}
         </form>
     );
 };

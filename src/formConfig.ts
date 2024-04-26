@@ -1,5 +1,5 @@
 import FileUploadComponent from "./component/fileUploadComponent";
-import { FooterConfig, FormConfigType, HeaderConfig } from "./dynamicForm/types";
+import { FooterConfig, FormConfigType, HeaderConfig, ValidationRule, ValidatorType } from "./dynamicForm/types";
 import { Validators } from "./dynamicForm/validators";
 
 export interface IDataType {
@@ -9,25 +9,28 @@ export interface IDataType {
     areyouworking: boolean;
 };
 
-const validateGender = (value: string, model: IDataType, key: keyof IDataType) => {
-    let valid: boolean = true;
-    const employee: string = model['employee'];
-    if(value === 'male' && employee === 'employee1') {
-        valid = false;
-    }
-    else if(value === 'female' && employee !== 'employee1') {
-        valid = false;
-    }
-    return {
-        type: "invalidGender", 
-        valid: valid,
-        message: valid ? "" : "Gender value is not valid for selected Employee."
-    };
+export const defaultValDataType: IDataType = {employee: '', role: "Employee", gender: "female", areyouworking: false};
+export const validateGender: ValidatorType<IDataType, string> = {
+    type: "invalidGender",
+    validate: (value: string, model: IDataType, key: keyof IDataType): ValidationRule => {
+        let valid = true;
+        const employee: string = model['employee'];
+        if (value === 'male' && employee === 'employee1') {
+            valid = false;
+        } else if (value === 'female' && employee !== 'employee1') {
+            valid = false;
+        }
+        return {
+            type: "invalidGender",
+            valid: valid,
+            message: valid ? "" : "Gender value is not valid for selected Employee."
+        };
+    },
 };
 
 export const getDefaultHeader = () : HeaderConfig => {
     return {
-        title: 'Billing address',
+        title: 'Form 1',
         leftSideControls: [
             {
                 type: 'button',
@@ -169,7 +172,7 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                             type: "text",
                             label: "Enter Role",
                             required: true,
-                            validators: [Validators.required, Validators.minLength(8)]
+                            validators: [Validators.required(), Validators.minLength(8)]
                         },
                     ],
                 },
@@ -177,7 +180,7 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                     csscolmd: 12,
                     cssmb: 4,
                     csslabelcolsm: 4,
-                    csscontrolcolsm: 4,
+                    csscontrolcolsm: 8,
                     rows: [
                         {
                             csscolmd: 6,
@@ -185,6 +188,8 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                             key: "gender",
                             type: "radio",
                             label: "Select Gender",
+                            labelField: 'label',
+                            valueField: 'value',
                             options: [
                                 { key: 1, label: "Male", value: "male" },
                                 { key: 2, label: "Female", value: "female" },
