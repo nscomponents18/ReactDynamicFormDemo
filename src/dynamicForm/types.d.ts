@@ -90,6 +90,7 @@ export interface FooterConfig {
 
 export interface DynamicFormSetting<T> {
     cssFramework?: string;
+    cssClassInitial?: string
     header?: HeaderConfig,
     body: FormConfigType;
     footer?: FooterConfig;

@@ -12,7 +12,7 @@
 }
 
 .toggle-switch-checkbox {
-    display: none;
+    display: none !important;
 }
 
 .toggle-switch-text-con {

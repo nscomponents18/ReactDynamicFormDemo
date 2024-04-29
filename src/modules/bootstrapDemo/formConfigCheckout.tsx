@@ -1,6 +1,6 @@
-import ToggleSwitch from "./component/toggleSwitch/toggleSwitch";
-import { ColClassesType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from "./dynamicForm/types";
-import { Validators } from "./dynamicForm/validators";
+import ToggleSwitch from "../../component/toggleSwitch/toggleSwitch";
+import { ColClassesType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from "../../dynamicForm/types";
+import { Validators } from "../../dynamicForm/validators";
 
 export interface ICheckout {
     firstName: string;

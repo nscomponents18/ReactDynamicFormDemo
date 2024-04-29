@@ -1,4 +1,4 @@
-import { COL, CONTAINER_INITIAL } from "./constants";
+import { CONTAINER_INITIAL } from "./constants";
 import { ColClassesType, ErrorType, FormControlType } from "./types";
 
 export const isUndefinedOrNull = (value: unknown): value is null | undefined => {
@@ -35,9 +35,9 @@ export const isEventObject = (eventCandidate: unknown): eventCandidate is Event 
 }
 
 
-export const getContainerColumnClassName = (colClassesType: ColClassesType): string => {
+export const getContainerColumnClassName = (colClassesType: ColClassesType, classInitial: string): string => {
   let cssClass: string[] = [];
-  cssClass = getClassNamesForInitails(colClassesType, null , CONTAINER_INITIAL, COL);
+  cssClass = getClassNamesForInitails(colClassesType, null , CONTAINER_INITIAL, classInitial);
   if(colClassesType.containerclass) {
     cssClass.push(colClassesType.containerclass);
   }
@@ -155,5 +155,21 @@ export const doRenderLabel = <T,>(setting: FormControlType<T>): boolean => {
   }
   return false;
 };
+
+export const inFraction = (numerator: number, denominator: number): string => {
+  if (denominator === 0) {
+      throw new Error("Denominator cannot be zero.");
+  }
+
+  const gcd = (a: number, b: number): number => {
+      return b ? gcd(b, a % b) : a;
+  };
+
+  const divisor: number = gcd(numerator, denominator);
+  const simplifiedNumerator: number = numerator / divisor;
+  const simplifiedDenominator: number = denominator / divisor;
+
+  return `${simplifiedNumerator}/${simplifiedDenominator}`;
+}
 
 

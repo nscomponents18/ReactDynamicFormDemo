@@ -1,18 +1,18 @@
-import FileUploadComponent from "./component/fileUploadComponent";
-import { FooterConfig, FormConfigType, HeaderConfig, ValidationRule, ValidatorType } from "./dynamicForm/types";
-import { Validators } from "./dynamicForm/validators";
+import FileUploadComponent from "../../component/fileUploadComponent";
+import { FooterConfig, FormConfigType, HeaderConfig, ValidationRule, ValidatorType } from "../../dynamicForm/types";
+import { Validators } from "../../dynamicForm/validators";
 
-export interface IDataType {
+export interface IDataTypeTailwind {
     employee: string;
     role: string;
     gender: string;
     areyouworking: boolean;
 };
 
-export const defaultValDataType: IDataType = {employee: '', role: "Employee", gender: "female", areyouworking: false};
-export const validateGender: ValidatorType<IDataType, string> = {
+export const defaultValDataType: IDataTypeTailwind = {employee: '', role: "Employee", gender: "female", areyouworking: false};
+export const validateGenderTailwind: ValidatorType<IDataTypeTailwind, string> = {
     type: "invalidGender",
-    validate: (value: string, model: IDataType, key: keyof IDataType): ValidationRule => {
+    validate: (value: string, model: IDataTypeTailwind, key: keyof IDataTypeTailwind): ValidationRule => {
         let valid = true;
         const employee: string = model['employee'];
         if (value === 'male' && employee === 'employee1') {
@@ -28,7 +28,7 @@ export const validateGender: ValidatorType<IDataType, string> = {
     },
 };
 
-export const getDefaultHeader = () : HeaderConfig => {
+export const getForm1HeaderTailwind = () : HeaderConfig => {
     return {
         title: 'Form 1',
         leftSideControls: [
@@ -38,7 +38,7 @@ export const getDefaultHeader = () : HeaderConfig => {
                 name: 'btnSave',
                 key: 'btnSave',
                 label: 'Save', 
-                className: 'btn-secondary',
+                className: 'bg-gray-600 text-white px-4 py-2 border border-gray-600 rounded hover:bg-gray-700',
                 buttontype: 'button'
             },
             {
@@ -47,7 +47,7 @@ export const getDefaultHeader = () : HeaderConfig => {
                 name: 'btnSubmit',
                 key: 'btnSubmit',
                 label: 'Submit', 
-                className: 'btn-primary',
+                className: 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded',
                 buttontype: 'submit'
             }
         ],
@@ -58,7 +58,7 @@ export const getDefaultHeader = () : HeaderConfig => {
                 name: 'btnShare',
                 key: 'btnShare',
                 label: 'Share', 
-                className: 'btn-sm btn-outline-secondary',
+                className: 'text-gray-600 border border-gray-600 px-3 py-1 rounded hover:bg-gray-600 hover:text-white focus:outline-none',
                 buttontype: 'button'
             },
             {
@@ -67,23 +67,23 @@ export const getDefaultHeader = () : HeaderConfig => {
                 name: 'btnExport',
                 key: 'btnExport',
                 label: 'Export', 
-                className: 'btn-sm btn-outline-secondary',
+                className: 'text-gray-600 border border-gray-600 px-3 py-1 rounded hover:bg-gray-600 hover:text-white focus:outline-none',
                 buttontype: 'button'
             }
         ]
     }
 }
 
-export const getDefaultFooter = () : FooterConfig => {
+export const getForm1FooterTailwind = () : FooterConfig => {
     return {
-        /*leftSideControls: [
+        leftSideControls: [
             {
                 type: 'button',
                 id: 'btnSave',
                 name: 'btnSave',
                 key: 'btnSave',
                 label: 'Save', 
-                className: 'btn-secondary',
+                className: 'bg-gray-600 text-white px-4 py-2 border border-gray-600 rounded hover:bg-gray-700',
                 buttontype: 'button'
             },
             {
@@ -92,18 +92,18 @@ export const getDefaultFooter = () : FooterConfig => {
                 name: 'btnSubmit',
                 key: 'btnSubmit',
                 label: 'Submit', 
-                className: 'btn-primary',
+                className: 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded',
                 buttontype: 'submit'
             }
-        ],*/
-        /*centerControls: [
+        ],
+        centerControls: [
             {
                 type: 'button',
                 id: 'btnShare',
                 name: 'btnShare',
                 key: 'btnShare',
                 label: 'Share', 
-                className: 'btn-sm btn-outline-secondary',
+                className: 'text-gray-600 border border-gray-600 px-3 py-1 rounded hover:bg-gray-600 hover:text-white focus:outline-none',
                 buttontype: 'button'
             },
             {
@@ -112,10 +112,10 @@ export const getDefaultFooter = () : FooterConfig => {
                 name: 'btnExport',
                 key: 'btnExport',
                 label: 'Export', 
-                className: 'btn-sm btn-outline-secondary',
+                className: 'text-gray-600 border border-gray-600 px-3 py-1 rounded hover:bg-gray-600 hover:text-white focus:outline-none',
                 buttontype: 'button'
             }
-        ],*/
+        ],
         rightSideControls: [
             {
                 type: 'button',
@@ -123,7 +123,7 @@ export const getDefaultFooter = () : FooterConfig => {
                 name: 'btnSave',
                 key: 'btnSave',
                 label: 'Save', 
-                className: 'btn-secondary',
+                className: 'bg-gray-600 text-white px-4 py-2 border border-gray-600 rounded hover:bg-gray-700',
                 buttontype: 'button'
             },
             {
@@ -132,32 +132,31 @@ export const getDefaultFooter = () : FooterConfig => {
                 name: 'btnSubmit',
                 key: 'btnSubmit',
                 label: 'Submit', 
-                className: 'btn-primary',
+                className: 'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded',
                 buttontype: 'submit'
             }
         ]
     }
 }
 
-export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType => {
+export const getForm1ConfigTailwind = (isHorizontalForm: boolean): FormConfigType => {
     if(isHorizontalForm) {
         return {
-            containerClass: 'con pt-1',
+            containerClass: 'con mx-11',
             isLabelControlsHorizontal: true,
             columns: [
                 {
-                    csscolmd: 12,
-                    cssmb: 4,
-                    csslabelcolsm: 4,
-                    csscontrolcolsm: 8,
+                    cssw: 'full',
+                    cssmb: 6,
+                    csslabelw: '1/4',
+                    csscontrolw: '1/2',
                     rows: [
                         {
-                            csscolmd: 6,
-                            csscolsm: 6,
+                            cssw: '1/2',
                             key: "employee",
                             type: "select",
                             label: "Select Employee",
-                            className: 'form-select',
+                            className: 'w-full form-select',
                             options: [],
                             required: true,
                             refRequired: true,
@@ -166,8 +165,7 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                             }
                         },
                         {
-                            csscolmd: 6,
-                            csscolsm: 6,
+                            cssw: '1/2',
                             key: "role",
                             type: "text",
                             label: "Enter Role",
@@ -177,14 +175,14 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                     ],
                 },
                 {
-                    csscolmd: 12,
-                    cssmb: 4,
-                    csslabelcolsm: 4,
-                    csscontrolcolsm: 8,
+                    cssw: 'full',
+                    cssmb: 6,
+                    csslabelw: '1/4',
+                    csscontrolw: '3/4',
+                    //csscontrolspace: 'x-4',
                     rows: [
                         {
-                            csscolmd: 6,
-                            csscolsm: 6,
+                            cssw: '1/2',
                             key: "gender",
                             type: "radio",
                             label: "Select Gender",
@@ -194,10 +192,10 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                                 { key: 1, label: "Male", value: "male" },
                                 { key: 2, label: "Female", value: "female" },
                             ],
-                            validators:[validateGender]
+                            validators:[validateGenderTailwind]
                         },
                         {
-                            csscolsm: 6,
+                            cssw: '1/2',
                             key: "areyouworking",
                             type: "toggleswitch",
                             id: "areyouworking",
@@ -207,14 +205,11 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                     ]
                 },
                 {
-                    csscolmd: 12,
-                    cssmb: 4,
-                    csslabelcolsm: 4,
-                    csscontrolcolsm: 4,
+                    cssw: 'full',
+                    cssmb: 6,
                     rows: [
                         {
-                            csscolsm: 12,
-                            csscontrolcolsm: 12,
+                            cssw: 'full',
                             key: "upload",
                             type: "component",
                             refRequired: true,
@@ -265,7 +260,7 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                                 { key: 1, label: "Male", value: "male" },
                                 { key: 2, label: "Female", value: "female" },
                             ],
-                            validators:[validateGender]
+                            validators:[validateGenderTailwind]
                         },
                     ],
                 },

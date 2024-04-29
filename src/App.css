@@ -24,5 +24,32 @@ th {
   padding: 1.5rem;
   margin-right: 0;
   margin-left: 0;
-  margin: 1rem -15px 0;
+  margin: 1rem 1 rem 0;
 }
+
+/* Navbar.css */
+.navbar ul {
+  display: flex; /* Makes the list horizontal */
+  list-style: none; /* Removes bullet points */
+  padding: 0; /* Removes default padding */
+  margin: 0; /* Removes default margin */
+}
+
+.navbar li {
+  margin-right: 20px; /* Adds space between the links */
+}
+
+.navbar li:last-child {
+  margin-right: 0; /* Removes margin from the last item */
+}
+
+.navbar a {
+  text-decoration: none; /* Removes underline from links */
+  color: #007bff; /* Sets link color */
+  transition: color 0.3s; /* Smooth transition for color change */
+}
+
+.navbar a:hover {
+  color: #0056b3; /* Color change on hover */
+}
+

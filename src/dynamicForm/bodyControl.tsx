@@ -23,7 +23,7 @@ const BodyControl = <T extends {}>({ cssDefaults, body, model, getCustomControls
     return (
         <div className={asString(cssBody.container)}>
             {body.columns.map((column: ColumnType, parentIndex: number) => (
-                <div key={parentIndex} className={getContainerColumnClassName(column)}>
+                <div key={parentIndex} className={getContainerColumnClassName(column, asString(cssDefaults.cssClassInitial))}>
                     {column.rows && column.rows.length > 0 && (
                             <div className={asString(cssBody.horizontalContainer)}>
                                 {column.rows.map((row: FormControlType<T>, index: number) => (
