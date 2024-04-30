@@ -8,7 +8,7 @@ import { isEventObject, isUndefinedOrNull } from './utils';
 import { Validators } from './validators';
 import { CSS_FRAMEWORK } from './constants';
 
-const DynamicForm = <T extends {}>({cssFramework, header, body, footer, model, setModel, validateOnSubmit, onChange, onClick, setRef, getCustomControls }: DynamicFormSetting<T>): JSX.Element => {
+const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body, footer, model, setModel, validateOnSubmit, onChange, onClick, setRef, getCustomControls }: DynamicFormSetting<T>): JSX.Element => {
     //const [model, setModel] = React.useState<T>(defaultValue || {} as T);
     const [errors, setErrors] = React.useState<ErrorType>({});
     const [cssDefaults, setCssDefaults] = React.useState<Record<string,string | boolean | Record<string,unknown>>>({});

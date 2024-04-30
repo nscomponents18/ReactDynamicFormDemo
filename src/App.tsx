@@ -8,6 +8,7 @@ import {
 import BootstrapDemo from './modules/bootstrapDemo/bootstrapDemo';
 import TailwindDemo from './modules/tailwindDemo/tailwindDemo';
 import './App.css';
+import TailwindDemoFrame from './modules/tailwindDemo/tailwindDemoFrame';
 
 
 
@@ -29,7 +30,7 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<BootstrapDemo />} />
           <Route path="/bootstrap" element={<BootstrapDemo />} />
-          <Route path="/tailwind" element={<TailwindDemo />} />
+          <Route path="/tailwind" element={<TailwindDemoFrame />} />
         </Routes>
       </div>
     </Router>

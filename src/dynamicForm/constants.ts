@@ -19,7 +19,7 @@ export const CSS_FRAMEWORK: Record<string, Record<string,string | boolean | Reco
         },
         body: {
             container: 'row',
-            horizontalContainer: 'row',
+            horizontalAllControlsContainer: 'row',
             horizontalControlsContainer: 'form-group row',
             verticalControlsContainer: 'form-group',
             horizontalLabel: 'col-form-label',
@@ -56,7 +56,7 @@ export const CSS_FRAMEWORK: Record<string, Record<string,string | boolean | Reco
         },
         "body": {
             "container": "flex flex-wrap",
-            "horizontalContainer": "flex flex-wrap",
+            "horizontalAllControlsContainer": "flex flex-wrap",
             "horizontalControlsContainer": "flex flex-wrap items-center",
             "verticalControlsContainer": "block",
             "horizontalLabel": "block mb-2",
@@ -75,7 +75,7 @@ export const CSS_FRAMEWORK: Record<string, Record<string,string | boolean | Reco
         "checkBoxRadio": "form-check-input mr-2",
         "checkBoxLabel": "form-check-label",
         "label": "block mb-2",
-        "line": "my-4",
+        "line": "my-6",
         "miniHeader": "mb-3",
         "additionalInfo": "text-gray-500"
     }

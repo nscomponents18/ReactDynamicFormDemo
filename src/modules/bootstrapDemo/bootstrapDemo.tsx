@@ -42,11 +42,14 @@ const BootstrapDemo: React.FC = () => {
     }, []);*/
 
     React.useEffect(() => {
-        deleteScriptTagById('tailwind');
+        /*deleteScriptTagById('tailwind');
         deleteScriptTagById('tailwind-config');
         deleteStyleById('tailwind-style');
-        deleteStyleTagContainingText('tailwindcss');
+        deleteStyleTagContainingText('tailwindcss');*/
         addLink('https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css', 'bootstrap');
+        /*setTimeout(() => {
+            deleteStyleTagContainingText('tailwindcss');
+        },2000);*/
     }, []);
 
 
@@ -140,19 +143,19 @@ const BootstrapDemo: React.FC = () => {
     
     return (
         <>
-        <div style={{marginBottom: "10px"}}>
-            <DynamicForm header={headerConfig} body={formConfig} footer={footerConfig} model={state} setModel={setState} onChange={handleChange} 
-                setRef={setRefs} getCustomControls={getControl} />
-        </div>
-        <div className='container px-0'>
-            <div className='row g-5'>
-                <div className="col-md-7 col-lg-8">
-                    <DynamicForm header={getHeaderForCheckout()} body={bodyCheckout} footer={getFooterForCheckout()} model={stateCheckout} 
-                    setModel={setStateCheckout} onChange={handleCheckoutChange} setRef={setRefs} validateOnSubmit={true}
-                    getCustomControls={getCustomControls}/>
+            <div style={{marginBottom: "10px"}}>
+                <DynamicForm header={headerConfig} body={formConfig} footer={footerConfig} model={state} setModel={setState} onChange={handleChange} 
+                    setRef={setRefs} getCustomControls={getControl} />
+            </div>
+            <div className='container px-0'>
+                <div className='row g-5'>
+                    <div className="col-md-7 col-lg-8">
+                        <DynamicForm header={getHeaderForCheckout()} body={bodyCheckout} footer={getFooterForCheckout()} model={stateCheckout} 
+                        setModel={setStateCheckout} onChange={handleCheckoutChange} setRef={setRefs} validateOnSubmit={true}
+                        getCustomControls={getCustomControls}/>
+                    </div>
                 </div>
             </div>
-        </div>
         </>
     );
 };

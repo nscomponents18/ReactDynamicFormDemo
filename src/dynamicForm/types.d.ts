@@ -56,6 +56,7 @@ export interface ColumnType extends ColClassesType {
     type?: string;
     className?: string;
     controlProps?: Record<string, any>;
+    horizontalAllControlsClass?: string;
 };
 
 export interface FormConfigType {

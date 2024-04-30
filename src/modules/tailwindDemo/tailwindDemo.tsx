@@ -1,10 +1,11 @@
 import React from "react";
 //import './tailwind.css';
-import { addScript, addStyle, deleteLinkTagById } from "../../AppUtils";
+import { addScript, addStyle, deleteLinkTagById, deleteScriptTagById, deleteStyleById, deleteStyleTagContainingText } from "../../AppUtils";
 import ToggleSwitch from "../../component/toggleSwitch/toggleSwitch";
 import DynamicForm from "../../dynamicForm/dynamicForm";
 import { ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from "../../dynamicForm/types";
 import { IDataTypeTailwind, defaultValDataType, getForm1ConfigTailwind, getForm1FooterTailwind, getForm1HeaderTailwind } from "./formConfig";
+import { CheckoutDefaultValueTailwind, ICheckoutTailwind, getCustomControlsTailwind, getFooterForCheckoutTailwind, getFormConfigForCheckoutTailwind, getHeaderForCheckoutTailwind } from "./formConfigCheckoutTailwind";
 
 const TailwindDemo: React.FC = () => {
 
@@ -16,6 +17,9 @@ const TailwindDemo: React.FC = () => {
     const [headerConfig, setHeaderConfig] = React.useState<HeaderConfig>({ ...getForm1HeaderTailwind() });
     const [formConfig, setFormConfig] = React.useState<FormConfigType>({ ...getForm1ConfigTailwind(true) });
     const [footerConfig, setFooterConfig] = React.useState<FooterConfig>({ ...getForm1FooterTailwind() });
+
+    const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType>({ ...getFormConfigForCheckoutTailwind() });
+    const [stateCheckout, setStateCheckout] = React.useState<ICheckoutTailwind>(CheckoutDefaultValueTailwind);
 
     //const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType>({ ...getFormConfigForCheckout() });
     //const [stateCheckout, setStateCheckout] = React.useState<ICheckout>(CheckoutDefaultValue);
@@ -40,7 +44,7 @@ const TailwindDemo: React.FC = () => {
         deleteStyleTagContainingText('Bootstrap');
     }, []);*/
 
-    React.useEffect(() => {
+    /*React.useEffect(() => {
         deleteLinkTagById('bootstrap');
         const script: string = `tailwind.config = {
             theme: {
@@ -81,7 +85,13 @@ const TailwindDemo: React.FC = () => {
             addScript(null, script, 'tailwind-config');
             addStyle(styles,'tailwind-style');
         });
-    }, []);
+        return () => {
+            deleteScriptTagById('tailwind');
+            deleteScriptTagById('tailwind-config');
+            deleteStyleById('tailwind-style');
+            deleteStyleTagContainingText('tailwindcss');
+        }
+    }, []);*/
 
     React.useEffect(() => {
         const employeeOptions = [
@@ -168,18 +178,27 @@ const TailwindDemo: React.FC = () => {
         return null;
     };
 
-    /*const handleCheckoutChange = (event: any,key: string, value: any, model: ICheckout) => {
-    };*/
+    const handleCheckoutChange = (event: any,key: string, value: any, model: ICheckoutTailwind) => {
+    };
     
     return (
         <>
-            {render && (
-                <div style={{marginBottom: "10px"}}>
-                    <DynamicForm cssFramework='tailwind' header={headerConfig} body={formConfig} footer={footerConfig} model={state} setModel={setState} onChange={handleChange} 
+            <div style={{marginBottom: "10px"}}>
+                <DynamicForm cssFramework='tailwind' header={headerConfig} body={formConfig} footer={footerConfig} model={state} setModel={setState} onChange={handleChange} 
                         setRef={setRefs} getCustomControls={getControl} />
+            </div>
+            <div className='container px-0 mx-11'>
+                <div className='w-3/4'>
+                    <div className="w-full p-6">
+                        <DynamicForm cssFramework='tailwind' header={getHeaderForCheckoutTailwind()} body={bodyCheckout} footer={getFooterForCheckoutTailwind()} model={stateCheckout} 
+                        setModel={setStateCheckout} onChange={handleCheckoutChange} setRef={setRefs} validateOnSubmit={true}
+                        getCustomControls={getCustomControlsTailwind}/>
+                    </div>
                 </div>
-            )}
+            </div>
         </>
+          
+        
     )
 };
 
