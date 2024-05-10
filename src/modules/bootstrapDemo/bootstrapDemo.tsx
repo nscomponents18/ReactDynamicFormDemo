@@ -82,28 +82,29 @@ const BootstrapDemo: React.FC = () => {
         console.log(`Change happened for key ${key} with value ${value}`);
         const formConfigClone = {...formConfig};
         if(key === 'employee') {
-        let gender: FormControlType<IDataType> | undefined;
-        formConfigClone.columns.map((column: ColumnType) => {
-            if(!gender) {
-            gender = column.rows?.filter(item => item.key === 'gender')[0];
+            let gender: FormControlType<IDataType> | undefined;
+            let colIndex: number;
+            let rowIndex: number;
+            formConfigClone.columns.map((column: ColumnType) => {
+                if(!gender) {
+                    gender = column.rows?.filter(item => item.key === 'gender')[0];
+                }
+            });
+            if(gender) {
+                //gender.hide = false;
+                if(value === 'employee1') {
+                    //setState({...model, gender: 'female'});
+                    model.gender = 'female';
+                }
+                else if(value === 'employee2') {
+                    //gender.hide = true;
+                }
+                else {
+                    //setState({...model, gender: 'male'});
+                    model.gender = 'male';
+                }
             }
-        });
-        if(gender) {
-            gender.hide = false;
-            if(value === 'employee1') {
-            //setState({...model, gender: 'female'});
-            model.gender = 'female';
-            }
-            else if(value === 'employee2') {
-            gender.hide = true;
-            }
-            else {
-            //setState({...model, gender: 'male'});
-            model.gender = 'male';
-            }
-        }
-        
-        model.role = value as string;
+            model.role = value as string;
         }
         setFormConfig(formConfigClone);
     };

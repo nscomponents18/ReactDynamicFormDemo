@@ -157,13 +157,15 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                             key: "employee",
                             type: "select",
                             label: "Select Employee",
+                            valueField: 'value',
                             className: 'form-select',
                             options: [],
                             required: true,
                             refRequired: true,
                             controlProps: {
                                 'aria-label': "Select Employee"
-                            }
+                            },
+                            
                         },
                         {
                             csscolmd: 6,
@@ -194,7 +196,8 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                                 { key: 1, label: "Male", value: "male" },
                                 { key: 2, label: "Female", value: "female" },
                             ],
-                            validators:[validateGender]
+                            validators:[validateGender],
+                            hide: "employee === 'employee2'",
                         },
                         {
                             csscolsm: 6,
@@ -203,6 +206,25 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                             id: "areyouworking",
                             label: "Are you working?",
                             disabled: false
+                        },
+                    ]
+                },
+                {
+                    csscolmd: 12,
+                    cssmb: 4,
+                    rows: [
+                        {
+                            csscolmd: 6,
+                            csscolsm: 6,
+                            key: "label",
+                            type: "label",
+                            label: "Label 1",
+                        },
+                        {
+                            csscolsm: 6,
+                            key: "label2",
+                            type: "label",
+                            label: "Label 2",
                         },
                     ]
                 },

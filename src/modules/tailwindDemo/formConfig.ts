@@ -192,7 +192,8 @@ export const getForm1ConfigTailwind = (isHorizontalForm: boolean): FormConfigTyp
                                 { key: 1, label: "Male", value: "male" },
                                 { key: 2, label: "Female", value: "female" },
                             ],
-                            validators:[validateGenderTailwind]
+                            validators:[validateGenderTailwind],
+                            hide: "employee === 'employee2'",
                         },
                         {
                             cssw: '1/2',

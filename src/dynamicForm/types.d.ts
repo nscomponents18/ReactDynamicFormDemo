@@ -39,7 +39,7 @@ export interface FormControlType<T> extends ColClassesType {
     labelField?: string;
     valueField?: string;
     placeholder?: string;
-    hide?: boolean;
+    hide?: boolean | string;
     disabled?: boolean;
     required?: boolean;
     refRequired?: boolean;

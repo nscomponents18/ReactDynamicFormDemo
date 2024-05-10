@@ -1,6 +1,7 @@
 import { CONTAINER_INITIAL } from "./constants";
 import { ColClassesType, ErrorType, FormControlType } from "./types";
 
+
 export const isUndefinedOrNull = (value: unknown): value is null | undefined => {
     if (value == null) {
         return true;
@@ -149,7 +150,7 @@ export const asBoolean = (val: unknown) => {
 };
 
 export const doRenderLabel = <T,>(setting: FormControlType<T>): boolean => {
-  const typeWithNoLabels: string[] = ['checkbox', 'header'];
+  const typeWithNoLabels: string[] = ['checkbox', 'header', 'label'];
   if(setting.label && !typeWithNoLabels.includes(setting.type)) {
     return true;
   }
@@ -170,6 +171,28 @@ export const inFraction = (numerator: number, denominator: number): string => {
   const simplifiedDenominator: number = denominator / divisor;
 
   return `${simplifiedNumerator}/${simplifiedDenominator}`;
-}
+};
+
+export const evaluateExpression = <T,>(expression: string | boolean | undefined | null, model: T): boolean => {
+  if(isUndefinedOrNull(expression)) {
+    return false;
+  }
+  if(isBoolean(expression)) {
+    return asBoolean(expression);
+  }
+  if(isString(expression) && model) {
+    //const func = new Function('model', `return ${expression};`) as (model: T) => boolean;
+    //return func(model);
+    try {
+      const func = new Function('model', `with (model) { return ${expression}; }`) as (model: T) => boolean;
+      const result = func(model);
+      return result;
+    } catch (error) {
+      console.error('Error evaluating expression:', error);
+      return false;
+    }
+  }
+  return false;
+};
 
 

@@ -129,13 +129,13 @@ const TailwindDemo: React.FC = () => {
             }
         });
         if(gender) {
-            gender.hide = false;
+            //gender.hide = false;
             if(value === 'employee1') {
             //setState({...model, gender: 'female'});
             model.gender = 'female';
             }
             else if(value === 'employee2') {
-            gender.hide = true;
+            //gender.hide = true;
             }
             else {
             //setState({...model, gender: 'male'});
