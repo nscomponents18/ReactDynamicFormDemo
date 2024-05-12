@@ -2,7 +2,7 @@ import React from 'react';
 import { CONTROL_INITIAL, LABEL_INITIAL } from './constants';
 import { renderControl } from './controlsHelper';
 import { ColClassesType, CustomControlCallback, ErrorType, FormControlType } from './types';
-import { asString, doRenderLabel, evaluateExpression, getContainerColumnClassName, getControlClassName } from './utils';
+import { asString, doRenderLabel, evaluateExpression, getContainerColumnClassName, getControlClassName, isUndefined } from './utils';
 
 interface FormControlProps<T> {
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>,
@@ -25,7 +25,7 @@ const FormControl = <T extends {}>({cssDefaults, cssMap, handleChange, handleRef
     const key: string = String(setting.key);
     return (
         <>
-            {!evaluateExpression(setting.hide, model) && (
+            {(isUndefined(setting.hide) || !evaluateExpression(setting.hide, model, true)) && (
                 <>
                     {isLabelControlsHorizontal && (
                         <div key={controlIndex} className={`control-${key} ${getContainerColumnClassName(setting, asString(cssDefaults.cssClassInitial))}`}>

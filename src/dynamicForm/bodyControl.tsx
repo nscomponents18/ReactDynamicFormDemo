@@ -2,7 +2,7 @@ import React from 'react';
 import { getControl } from './controlsHelper';
 import FormControl from './formControl';
 import { ColumnType, CustomControlCallback, ErrorType, FormConfigType, FormControlType } from './types';
-import { asBoolean, asString, getClassNames, getContainerColumnClassName, isUndefinedOrNull } from './utils';
+import { asBoolean, asString, evaluateExpression, getClassNames, getContainerColumnClassName, isUndefined } from './utils';
 
 interface BodyControlProps<T> {
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>;
@@ -20,32 +20,58 @@ const BodyControl = <T extends {}>({ cssDefaults, body, model, getCustomControls
     
     const isLabelControlsHorizontal: boolean = asBoolean(cssDefaults.isLabelControlsHorizontal);
     const cssBody: Record<string,unknown> = cssDefaults.body as Record<string,unknown>;
+
+    const renderRows = (rows: FormControlType<T>[] | undefined, column: ColumnType) => {
+        return (
+            <>
+                {rows && rows.length > 0 && (
+                    <div className={getClassNames(asString(cssBody.horizontalAllControlsContainer), column.horizontalAllControlsClass)}>
+                        {rows.map((row: FormControlType<T>, index: number) => (
+                            <FormControl key={index} index={index} cssMap={cssBody} cssDefaults={cssDefaults} setting={row} parentSetting={column} errors={errors} model={model} 
+                                isLabelControlsHorizontal={isLabelControlsHorizontal}
+                                handleChange={handleChange} handleRef={handleRef} handleClick={handleClick}
+                                getCustomControls={getCustomControls} />
+                        ))}
+                    </div>
+                )}
+            </>
+        )
+    };
+
+    const renderColumn = (columns: ColumnType[] | undefined) => {
+        return (
+            <>
+                {columns && columns.map((column: ColumnType, parentIndex: number) => (
+                    <>
+                        {(isUndefined(column.hide) || !evaluateExpression(column.hide, model, true)) && (
+                            <div key={parentIndex} className={getContainerColumnClassName(column, asString(cssDefaults.cssClassInitial))}>
+                                {(column.columns && column.columns.length > 0) && (
+                                    <div key={parentIndex} className={getClassNames(asString(cssBody.horizontalAllControlsContainer), column.horizontalAllControlsClass)}>
+                                        {renderColumn(column.columns)}
+                                    </div>
+                                )}
+                                {renderRows(column.rows, column)}
+                                {(!column.rows || column.rows.length === 0) && (!column.columns || column.columns.length === 0) && column.type && (
+                                    <>
+                                        {
+                                            (() => {
+                                                const setting: FormControlType<T>  = {...{type: column.type, key: column.type as keyof T}, ...column};
+                                                return getControl(cssDefaults, column.type, model, -1, errors, handleChange, handleRef, handleClick, setting, setting, getCustomControls);
+                                            })()
+                                        }
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </>
+                ))}
+            </>
+        );
+    };
+
     return (
         <div className={asString(cssBody.container)}>
-            {body.columns.map((column: ColumnType, parentIndex: number) => (
-                <div key={parentIndex} className={getContainerColumnClassName(column, asString(cssDefaults.cssClassInitial))}>
-                    {column.rows && column.rows.length > 0 && (
-                            <div className={getClassNames(asString(cssBody.horizontalAllControlsContainer), column.horizontalAllControlsClass)}>
-                                {column.rows.map((row: FormControlType<T>, index: number) => (
-                                    <FormControl key={index} index={index} cssMap={cssBody} cssDefaults={cssDefaults} setting={row} parentSetting={column} errors={errors} model={model} 
-                                        isLabelControlsHorizontal={isLabelControlsHorizontal}
-                                        handleChange={handleChange} handleRef={handleRef} handleClick={handleClick}
-                                        getCustomControls={getCustomControls} />
-                                ))}
-                            </div>
-                    )}
-                    {(!column.rows || column.rows.length === 0) && column.type && (
-                        <>
-                            {
-                                (() => {
-                                    const setting: FormControlType<T>  = {...{type: column.type, key: column.type as keyof T}, ...column};
-                                    return getControl(cssDefaults, column.type, model, -1, errors, handleChange, handleRef, handleClick, setting, setting, getCustomControls);
-                                })()
-                            }
-                        </>
-                    )}
-                </div>
-            ))}
+            {renderColumn(body.columns)}
         </div>
     )
 };

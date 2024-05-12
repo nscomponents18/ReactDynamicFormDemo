@@ -52,9 +52,11 @@ export interface FormControlType<T> extends ColClassesType {
 };
 
 export interface ColumnType extends ColClassesType {
+    columns?: ColumnType[];
     rows?: FormControlType[];
     type?: string;
     className?: string;
+    hide?: boolean | string;
     controlProps?: Record<string, any>;
     horizontalAllControlsClass?: string;
 };

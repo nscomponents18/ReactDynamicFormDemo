@@ -88,7 +88,7 @@ export const getFooterForCheckout = () : FooterConfig => {
 
 export const getFormConfigForCheckout = (): FormConfigType => {
   return {
-      containerClass: "needs-validation",
+      containerClass: "container py-2 border border-1 needs-validation",
       isLabelControlsHorizontal: false,
       columns: [
           {

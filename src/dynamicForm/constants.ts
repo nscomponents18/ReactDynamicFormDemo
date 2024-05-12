@@ -7,7 +7,7 @@ export const DEFAULT_LABEL_FIELD = 'label';
 
 export const CSS_FRAMEWORK: Record<string, Record<string,string | boolean | Record<string,unknown>>> = {
     bootstrap: {
-        container: 'container py-2 border border-1',
+        container: '', //'container py-2 border border-1',
         cssClassInitial: 'col',
         header: {
             container: 'd-flex w-100 pt-1 mb-3',
@@ -44,7 +44,7 @@ export const CSS_FRAMEWORK: Record<string, Record<string,string | boolean | Reco
         additionalInfo: 'text-muted',
     },
     tailwind: {
-        "container": "container py-2 border border-solid",
+        "container": '', //"container py-2 border border-solid",
         cssClassInitial: 'grid',
         "header": {
             "container": "flex w-full pt-1 mb-3",

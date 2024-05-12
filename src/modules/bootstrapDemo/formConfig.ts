@@ -142,7 +142,7 @@ export const getDefaultFooter = () : FooterConfig => {
 export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType => {
     if(isHorizontalForm) {
         return {
-            containerClass: 'con pt-1',
+            containerClass: 'container py-2 border border-1 con pt-1',
             isLabelControlsHorizontal: true,
             columns: [
                 {

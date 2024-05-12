@@ -142,7 +142,7 @@ export const getForm1FooterTailwind = () : FooterConfig => {
 export const getForm1ConfigTailwind = (isHorizontalForm: boolean): FormConfigType => {
     if(isHorizontalForm) {
         return {
-            containerClass: 'con mx-11',
+            containerClass: 'container py-2 border border-solid con mx-11',
             isLabelControlsHorizontal: true,
             columns: [
                 {

@@ -53,21 +53,23 @@ export const getDefaultControl = <T,>(
                         </div>
                     ))
                 ) : (
-                    setting.options?.map((option, index) => (
-                        <div key={`${index}-${asString(option[asString(setting.valueField)])}`} 
-                            className={asString(isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
-                            <input {...(setting.controlProps || {})} className={getClassNameForControl(asString(cssDefaults.checkBoxRadio), setting, errors)
-                                }
-                                disabled={setting.disabled}
-                                ref={setting.refRequired ? handleRef(setting) : null}
-                                type="radio" name={setting.name} id={setting.id} 
-                                value={asString(option[asString(setting.valueField)])} checked={model[setting.key] === option[asString(setting.valueField)]} 
-                                onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={setting.required} />
-                            <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={setting.id}>
-                                {asString(option[asString(setting.labelField)])}
-                            </label>
-                        </div>
-                    ))
+                        setting.options?.map((option, index) => {
+                            const optionId: string | undefined = (option?.id ? (option.id as string) : setting.id);
+                            return (<div key={`${index}-${asString(option[asString(setting.valueField)])}`} 
+                                className={asString(isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
+                                <input {...(setting.controlProps || {})} className={getClassNameForControl(asString(cssDefaults.checkBoxRadio), setting, errors)
+                                    }
+                                    disabled={setting.disabled}
+                                    ref={setting.refRequired ? handleRef(setting) : null}
+                                    type="radio" name={setting.name} id={optionId} 
+                                    value={asString(option[asString(setting.valueField)])} checked={model[setting.key] === option[asString(setting.valueField)]} 
+                                    onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={setting.required} />
+                                <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={optionId}>
+                                    {asString(option[asString(setting.labelField)])}
+                                </label>
+                            </div>
+                        )}
+                    )
                 )}
             </>
         ),    
@@ -90,7 +92,7 @@ export const getDefaultControl = <T,>(
           <hr className={asString(cssDefaults.line)}></hr>
       ),
       'header': (
-        <h4 className={asString(cssDefaults.miniHeader)}>{setting.label}</h4>
+        <h4 className={getClassNameForControl(asString(cssDefaults.miniHeader), setting, errors)}>{setting.label}</h4>
       ),
       'label': (
             <label {...setting.controlProps || {}} className={getClassNameForControl(asString(cssDefaults.label), setting, errors)}
@@ -232,6 +234,7 @@ export const renderControl =<T,>(
                 id={setting.id}
                 name={setting.name}
                 value={model[setting.key]}
+                model={model}
                 onChange={(e: any) => handleChange(e, setting)}
             />
         );

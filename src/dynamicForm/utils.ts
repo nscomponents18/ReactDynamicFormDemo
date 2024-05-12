@@ -173,7 +173,10 @@ export const inFraction = (numerator: number, denominator: number): string => {
   return `${simplifiedNumerator}/${simplifiedDenominator}`;
 };
 
-export const evaluateExpression = <T,>(expression: string | boolean | undefined | null, model: T): boolean => {
+export const evaluateExpression = <T,>(expression: string | boolean | undefined | null, model: T, defaultValue?: string | boolean | number | undefined | null): unknown => {
+  if(isUndefinedOrNull(defaultValue)) {
+    defaultValue = false;
+  }
   if(isUndefinedOrNull(expression)) {
     return false;
   }
@@ -189,10 +192,10 @@ export const evaluateExpression = <T,>(expression: string | boolean | undefined 
       return result;
     } catch (error) {
       console.error('Error evaluating expression:', error);
-      return false;
+      return defaultValue;
     }
   }
-  return false;
+  return defaultValue;
 };
 
 
