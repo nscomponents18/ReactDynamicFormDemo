@@ -1,12 +1,14 @@
 import React from 'react';
 import BodyControl from './bodyControl';
-import './dynamicForm.css';
-import FooterControl from './footerControl';
 import HeaderControl from './headerControl';
-import { ColumnType, DynamicFormSetting, ErrorType, FormControlType, ValidationRule, ValidatorFunction, ValidatorType } from './types';
-import { isEventObject, isUndefinedOrNull } from './utils';
-import { Validators } from './validators';
-import { CSS_FRAMEWORK } from './constants';
+import '../css/dynamicForm.css';
+import { isEventObject, isUndefinedOrNull } from '../utils/utils';
+import { ErrorType, ValidationRule, ValidatorType } from '../interfaces/validationTypes';
+import { CSS_FRAMEWORK } from '../constants';
+import { ColumnType } from '../interfaces/columnType';
+import { FormControlType } from '../interfaces/formControlType';
+import FooterControl from './footerControl';
+import { DynamicFormSetting } from '../interfaces/dynamicFormSetting';
 
 const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body, footer, model, setModel, validateOnSubmit, onChange, onClick, setRef, getCustomControls }: DynamicFormSetting<T>): JSX.Element => {
     //const [model, setModel] = React.useState<T>(defaultValue || {} as T);
@@ -66,7 +68,7 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
 
     const getErrors = () => {
         const errorsClone: ErrorType = {};
-        body.columns.map((column: ColumnType) => {
+        body.columns.map((column: ColumnType<T>) => {
             if(column.rows && column.rows.length > 0) {
                 column.rows.map((setting: FormControlType<T>) => {
                     let validators: ValidatorType<T, any>[] | undefined = setting.validators;
@@ -89,7 +91,7 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
                         }
                     }*/
                     if(validators && validators.length > 0) {
-                        const key: keyof T = setting.key;
+                        const key = setting.key as keyof T;
                         const value = model[key];
                         const fieldErrors: ValidationRule[] = validateField(model, key, value, validators);
                         //const fieldErrors = validateField(setting.key, val);
@@ -135,8 +137,7 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
             val = event;
         }
         const modelClone: T = { ...model };
-        const key: keyof T = setting.key;
-        //@ts-ignore
+        const key = setting.key as keyof T;
         modelClone[key] = val;
         if(onChange) {
             onChange(event, key, val, modelClone);
@@ -151,7 +152,8 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
     const handleClick = (event: React.MouseEvent<HTMLElement>, setting: FormControlType<T>) => {
         const id = event.currentTarget.id;
         if(onClick) {
-            onClick(event, setting.key, id, model);
+            const key = setting.key as keyof T;
+            onClick(event, key, id, model);
         }
         if(setting.onClick) {
             setting.onClick(event, setting.key, id, model);
@@ -160,7 +162,8 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
 
     const handleRef = (setting: FormControlType<T>) => (node: any) => {
         if (node) {
-            setRef && setRef(node, setting.key);
+            const key = setting.key as keyof T;
+            setRef && setRef(node, key);
         }
     };
 

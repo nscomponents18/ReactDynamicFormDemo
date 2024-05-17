@@ -1,9 +1,8 @@
 import React from "react";
 //import './tailwind.css';
-import { addScript, addStyle, deleteLinkTagById, deleteScriptTagById, deleteStyleById, deleteStyleTagContainingText } from "../../AppUtils";
 import ToggleSwitch from "../../component/toggleSwitch/toggleSwitch";
-import DynamicForm from "../../dynamicForm/dynamicForm";
-import { ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from "../../dynamicForm/types";
+import DynamicForm from "../../dynamicForm/components/main";
+import { ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from "../../dynamicForm";
 import { IDataTypeTailwind, defaultValDataType, getForm1ConfigTailwind, getForm1FooterTailwind, getForm1HeaderTailwind } from "./formConfig";
 import { CheckoutDefaultValueTailwind, ICheckoutTailwind, getCustomControlsTailwind, getFooterForCheckoutTailwind, getFormConfigForCheckoutTailwind, getHeaderForCheckoutTailwind } from "./formConfigCheckoutTailwind";
 
@@ -14,11 +13,11 @@ const TailwindDemo: React.FC = () => {
 
     const [render, setRender] = React.useState<boolean>(false);
     const [state, setState] = React.useState<IDataTypeTailwind>({...defaultValDataType});
-    const [headerConfig, setHeaderConfig] = React.useState<HeaderConfig>({ ...getForm1HeaderTailwind() });
-    const [formConfig, setFormConfig] = React.useState<FormConfigType>({ ...getForm1ConfigTailwind(true) });
-    const [footerConfig, setFooterConfig] = React.useState<FooterConfig>({ ...getForm1FooterTailwind() });
+    const [headerConfig, setHeaderConfig] = React.useState<HeaderConfig<IDataTypeTailwind>>({ ...getForm1HeaderTailwind() });
+    const [formConfig, setFormConfig] = React.useState<FormConfigType<IDataTypeTailwind>>({ ...getForm1ConfigTailwind(true) });
+    const [footerConfig, setFooterConfig] = React.useState<FooterConfig<IDataTypeTailwind>>({ ...getForm1FooterTailwind() });
 
-    const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType>({ ...getFormConfigForCheckoutTailwind() });
+    const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType<ICheckoutTailwind>>({ ...getFormConfigForCheckoutTailwind() });
     const [stateCheckout, setStateCheckout] = React.useState<ICheckoutTailwind>(CheckoutDefaultValueTailwind);
 
     //const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType>({ ...getFormConfigForCheckout() });
@@ -123,9 +122,9 @@ const TailwindDemo: React.FC = () => {
         const formConfigClone = {...formConfig};
         if(key === 'employee') {
         let gender: FormControlType<IDataTypeTailwind> | undefined;
-        formConfigClone.columns.map((column: ColumnType) => {
+        formConfigClone.columns.map((column: ColumnType<IDataTypeTailwind>) => {
             if(!gender) {
-            gender = column.rows?.filter(item => item.key === 'gender')[0];
+            gender = column.rows?.filter((item: any) => item.key === 'gender')[0];
             }
         });
         if(gender) {
@@ -172,7 +171,7 @@ const TailwindDemo: React.FC = () => {
         return <ToggleSwitch 
                 disabled={setting.disabled}
                 name={setting.name} id={setting.id} 
-                checked={(model[setting.key] as boolean)} 
+                checked={(model[setting.key as keyof IDataTypeTailwind] as boolean)} 
                 onChange={(e: boolean) => handleChange(e, setting)}  />
         }
         return null;

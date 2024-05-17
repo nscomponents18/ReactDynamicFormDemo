@@ -1,6 +1,5 @@
 import ToggleSwitch from "../../component/toggleSwitch/toggleSwitch";
-import { ColClassesType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from "../../dynamicForm/types";
-import { Validators } from "../../dynamicForm/validators";
+import { ColClassesType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig, Validators } from "../../dynamicForm";
 
 export interface ICheckout {
     firstName: string;
@@ -57,7 +56,7 @@ export const getCustomControls: CustomControlCallback<ICheckout> = (
         <span className="input-group-text">@</span>
         <input className="form-control" type="text"
               placeholder={setting.placeholder} disabled={setting.disabled}
-              value={model[setting.key] as string}
+              value={model[setting.key as keyof ICheckout] as string}
               onChange={e => handleChange(e, setting)} required={setting.required} />
       </div>
     )
@@ -65,20 +64,20 @@ export const getCustomControls: CustomControlCallback<ICheckout> = (
     return <ToggleSwitch 
             disabled={setting.disabled}
             name={setting.name} id={setting.id} 
-            checked={(model[setting.key] as boolean)} 
+            checked={(model[setting.key as keyof ICheckout] as boolean)} 
             onChange={(e: boolean) => handleChange(e, setting)}  />
   }
   return null;
 };
 
-export const getHeaderForCheckout = () : HeaderConfig => {
+export const getHeaderForCheckout = () : HeaderConfig<ICheckout> => {
     return {
         title: 'Billing Address',
         cssTitleCon: 'w-100'
     }
 };
 
-export const getFooterForCheckout = () : FooterConfig => {
+export const getFooterForCheckout = () : FooterConfig<ICheckout> => {
     return { 
       footerComp: (
         <button className="w-100 btn btn-primary btn-lg" type="submit">Continue to checkout</button>
@@ -86,7 +85,7 @@ export const getFooterForCheckout = () : FooterConfig => {
     };
 };
 
-export const getFormConfigForCheckout = (): FormConfigType => {
+export const getFormConfigForCheckout = (): FormConfigType<ICheckout> => {
   return {
       containerClass: "container py-2 border border-1 needs-validation",
       isLabelControlsHorizontal: false,

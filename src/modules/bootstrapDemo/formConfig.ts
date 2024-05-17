@@ -1,6 +1,5 @@
 import FileUploadComponent from "../../component/fileUploadComponent";
-import { FooterConfig, FormConfigType, HeaderConfig, ValidationRule, ValidatorType } from "../../dynamicForm/types";
-import { Validators } from "../../dynamicForm/validators";
+import { FooterConfig, FormConfigType, HeaderConfig, ValidationRule, ValidatorType, Validators } from "../../dynamicForm";
 
 export interface IDataType {
     employee: string;
@@ -28,7 +27,7 @@ export const validateGender: ValidatorType<IDataType, string> = {
     },
 };
 
-export const getDefaultHeader = () : HeaderConfig => {
+export const getDefaultHeader = () : HeaderConfig<IDataType> => {
     return {
         title: 'Form 1',
         leftSideControls: [
@@ -36,7 +35,6 @@ export const getDefaultHeader = () : HeaderConfig => {
                 type: 'button',
                 id: 'btnSave',
                 name: 'btnSave',
-                key: 'btnSave',
                 label: 'Save', 
                 className: 'btn-secondary',
                 buttontype: 'button'
@@ -45,7 +43,6 @@ export const getDefaultHeader = () : HeaderConfig => {
                 type: 'button',
                 id: 'btnSubmit',
                 name: 'btnSubmit',
-                key: 'btnSubmit',
                 label: 'Submit', 
                 className: 'btn-primary',
                 buttontype: 'submit'
@@ -56,7 +53,6 @@ export const getDefaultHeader = () : HeaderConfig => {
                 type: 'button',
                 id: 'btnShare',
                 name: 'btnShare',
-                key: 'btnShare',
                 label: 'Share', 
                 className: 'btn-sm btn-outline-secondary',
                 buttontype: 'button'
@@ -65,7 +61,6 @@ export const getDefaultHeader = () : HeaderConfig => {
                 type: 'button',
                 id: 'btnExport',
                 name: 'btnExport',
-                key: 'btnExport',
                 label: 'Export', 
                 className: 'btn-sm btn-outline-secondary',
                 buttontype: 'button'
@@ -74,7 +69,7 @@ export const getDefaultHeader = () : HeaderConfig => {
     }
 }
 
-export const getDefaultFooter = () : FooterConfig => {
+export const getDefaultFooter = () : FooterConfig<IDataType> => {
     return {
         /*leftSideControls: [
             {
@@ -121,7 +116,6 @@ export const getDefaultFooter = () : FooterConfig => {
                 type: 'button',
                 id: 'btnSave',
                 name: 'btnSave',
-                key: 'btnSave',
                 label: 'Save', 
                 className: 'btn-secondary',
                 buttontype: 'button'
@@ -130,7 +124,6 @@ export const getDefaultFooter = () : FooterConfig => {
                 type: 'button',
                 id: 'btnSubmit',
                 name: 'btnSubmit',
-                key: 'btnSubmit',
                 label: 'Submit', 
                 className: 'btn-primary',
                 buttontype: 'submit'
@@ -139,7 +132,7 @@ export const getDefaultFooter = () : FooterConfig => {
     }
 }
 
-export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType => {
+export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType<IDataType> => {
     if(isHorizontalForm) {
         return {
             containerClass: 'container py-2 border border-1 con pt-1',
@@ -216,13 +209,11 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                         {
                             csscolmd: 6,
                             csscolsm: 6,
-                            key: "label",
                             type: "label",
                             label: "Label 1",
                         },
                         {
                             csscolsm: 6,
-                            key: "label2",
                             type: "label",
                             label: "Label 2",
                         },
@@ -237,7 +228,6 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                         {
                             csscolsm: 12,
                             csscontrolcolsm: 12,
-                            key: "upload",
                             type: "component",
                             refRequired: true,
                             component: FileUploadComponent
@@ -313,7 +303,6 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType 
                     rows: [
                         {
                             csscolmd: 12,
-                            key: "upload",
                             type: "component",
                             refRequired: true,
                             component: FileUploadComponent

@@ -1,11 +1,15 @@
 import React from 'react';
-import { renderSides } from './controlsHelper';
-import { CustomControlCallback, ErrorType, FooterConfig, FormControlType } from './types';
-import { asString, getClassNames } from './utils';
+import { FooterConfig } from '../interfaces/footerConfig';
+import { ErrorType } from '../interfaces/validationTypes';
+import { CustomControlCallback } from '../interfaces/customControlCallback';
+import { FormControlType } from '../interfaces/formControlType';
+import { asString, getClassNames } from '../utils/utils';
+import { renderSides } from '../utils/controlsHelper';
+
 
 interface FooterControlProps<T> {
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>;
-    footer?: FooterConfig | undefined;
+    footer?: FooterConfig<T> | undefined;
     model: T;
     errors: ErrorType;
     getCustomControls?: CustomControlCallback<T>;

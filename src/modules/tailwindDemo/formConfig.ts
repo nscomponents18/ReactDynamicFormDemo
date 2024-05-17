@@ -1,6 +1,6 @@
 import FileUploadComponent from "../../component/fileUploadComponent";
-import { FooterConfig, FormConfigType, HeaderConfig, ValidationRule, ValidatorType } from "../../dynamicForm/types";
-import { Validators } from "../../dynamicForm/validators";
+import { FooterConfig, FormConfigType, HeaderConfig, ValidationRule, ValidatorType, Validators } from "../../dynamicForm";
+import {  } from "../../dynamicForm/utils/validators";
 
 export interface IDataTypeTailwind {
     employee: string;
@@ -28,7 +28,7 @@ export const validateGenderTailwind: ValidatorType<IDataTypeTailwind, string> = 
     },
 };
 
-export const getForm1HeaderTailwind = () : HeaderConfig => {
+export const getForm1HeaderTailwind = () : HeaderConfig<IDataTypeTailwind> => {
     return {
         title: 'Form 1',
         leftSideControls: [
@@ -74,7 +74,7 @@ export const getForm1HeaderTailwind = () : HeaderConfig => {
     }
 }
 
-export const getForm1FooterTailwind = () : FooterConfig => {
+export const getForm1FooterTailwind = () : FooterConfig<IDataTypeTailwind> => {
     return {
         leftSideControls: [
             {
@@ -139,7 +139,7 @@ export const getForm1FooterTailwind = () : FooterConfig => {
     }
 }
 
-export const getForm1ConfigTailwind = (isHorizontalForm: boolean): FormConfigType => {
+export const getForm1ConfigTailwind = (isHorizontalForm: boolean): FormConfigType<IDataTypeTailwind> => {
     if(isHorizontalForm) {
         return {
             containerClass: 'container py-2 border border-solid con mx-11',

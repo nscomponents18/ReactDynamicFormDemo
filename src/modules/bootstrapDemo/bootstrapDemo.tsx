@@ -1,8 +1,7 @@
 import React from "react";
 
 import ToggleSwitch from '../../component/toggleSwitch/toggleSwitch';
-import DynamicForm from "../../dynamicForm/dynamicForm";
-import { ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from '../../dynamicForm/types';
+import { DynamicForm, ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig, FindFormControl } from '../../dynamicForm';
 import { IDataType, defaultValDataType, getDefaultFooter, getDefaultFormConfig, getDefaultHeader } from './formConfig';
 import { CheckoutDefaultValue, ICheckout, getCustomControls, getFooterForCheckout, getFormConfigForCheckout, getHeaderForCheckout } from './formConfigCheckout';
 
@@ -16,11 +15,11 @@ const BootstrapDemo: React.FC = () => {
 
 
     const [state, setState] = React.useState<IDataType>(defaultValDataType);
-    const [headerConfig, setHeaderConfig] = React.useState<HeaderConfig>({ ...getDefaultHeader() });
-    const [formConfig, setFormConfig] = React.useState<FormConfigType>({ ...getDefaultFormConfig(true) });
-    const [footerConfig, setFooterConfig] = React.useState<FooterConfig>({ ...getDefaultFooter() });
+    const [headerConfig, setHeaderConfig] = React.useState<HeaderConfig<IDataType>>({ ...getDefaultHeader() });
+    const [formConfig, setFormConfig] = React.useState<FormConfigType<IDataType>>({ ...getDefaultFormConfig(true) });
+    const [footerConfig, setFooterConfig] = React.useState<FooterConfig<IDataType>>({ ...getDefaultFooter() });
 
-    const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType>({ ...getFormConfigForCheckout() });
+    const [bodyCheckout, setBodyCheckout] = React.useState<FormConfigType<ICheckout>>({ ...getFormConfigForCheckout() });
     const [stateCheckout, setStateCheckout] = React.useState<ICheckout>(CheckoutDefaultValue);
 
     /*React.useEffect(() => {
@@ -85,7 +84,8 @@ const BootstrapDemo: React.FC = () => {
             let gender: FormControlType<IDataType> | undefined;
             let colIndex: number;
             let rowIndex: number;
-            formConfigClone.columns.map((column: ColumnType) => {
+            console.log(FindFormControl(formConfigClone.columns,'gender'));
+            formConfigClone.columns.map((column: ColumnType<IDataType>) => {
                 if(!gender) {
                     gender = column.rows?.filter(item => item.key === 'gender')[0];
                 }
@@ -133,7 +133,7 @@ const BootstrapDemo: React.FC = () => {
         return <ToggleSwitch 
                 disabled={setting.disabled}
                 name={setting.name} id={setting.id} 
-                checked={(model[setting.key] as boolean)} 
+                checked={(model[setting.key as keyof IDataType] as boolean)} 
                 onChange={(e: boolean) => handleChange(e, setting)}  />
         }
         return null;

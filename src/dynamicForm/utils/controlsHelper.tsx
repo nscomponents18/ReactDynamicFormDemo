@@ -1,7 +1,10 @@
 import React, { ChangeEvent } from 'react';
-import { ColClassesType, CustomControlCallback, ErrorType, FormControlType } from './types';
 import { asBoolean, asString, evaluateExpression, getClassNameForControl, getClassNames, getKeyForControlMap, isString, isUndefinedOrNull } from './utils';
-import { DEFAULT_LABEL_FIELD } from './constants';
+import { ErrorType } from '../interfaces/validationTypes';
+import { FormControlType } from '../interfaces/formControlType';
+import { ColClassesType } from '../interfaces/colClassesType';
+import { DEFAULT_LABEL_FIELD } from '../constants';
+import { CustomControlCallback } from '../interfaces/customControlCallback';
 
 export const getDefaultControl = <T,>(
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>,
@@ -17,12 +20,13 @@ export const getDefaultControl = <T,>(
   ): JSX.Element => {
     const isLabelControlsHorizontal: boolean = asBoolean(cssDefaults.isLabelControlsHorizontal);
     const disabled = asBoolean(evaluateExpression(setting.disabled, model, false)); 
-    const required = asBoolean(evaluateExpression(setting.required, model, false)); 
+    const required = asBoolean(evaluateExpression(setting.required, model, false));
+    const value = model[setting.key as keyof T];
     const controls: { [key: string]: JSX.Element } = {
       'select': (
           <select {...setting.controlProps || {}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)} disabled={disabled}
               ref={setting.refRequired ? handleRef(setting) : null}
-              id={setting.id} name={setting.name} value={isUndefinedOrNull(model[setting.key]) ? '' : (model[setting.key] as string)}
+              id={setting.id} name={setting.name} value={isUndefinedOrNull(value) ? '' : (value as string)}
               onChange={e => handleChange(e as ChangeEvent<HTMLSelectElement>, setting)} required={required}>
               {getSelectOptions(setting)}
           </select>
@@ -34,7 +38,7 @@ export const getDefaultControl = <T,>(
           <input {...setting.controlProps || {}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)} type={setting.type}
               placeholder={setting.placeholder} disabled={disabled}
               ref={setting.refRequired ? handleRef(setting) : null}
-              id={setting.id} name={setting.name} value={isUndefinedOrNull(model[setting.key]) ? '' : (model[setting.key] as string) }
+              id={setting.id} name={setting.name} value={isUndefinedOrNull(value) ? '' : (value as string) }
               onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
         ),
         'radio': (
@@ -47,7 +51,7 @@ export const getDefaultControl = <T,>(
                                 disabled={disabled}
                                 ref={setting.refRequired ? handleRef(setting) : null}
                                 type="radio" name={setting.name} id={setting.id} 
-                                value={asString(option)} checked={model[setting.key] === option} 
+                                value={asString(option)} checked={value === option} 
                                 onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
                             <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={setting.id}>
                                 {asString(option)}
@@ -55,7 +59,8 @@ export const getDefaultControl = <T,>(
                         </div>
                     ))
                 ) : (
-                        setting.options?.map((option, index) => {
+                        setting.options?.map((optionParam, index) => {
+                            const option: Record<string, unknown> = optionParam as Record<string, unknown>;
                             const optionId: string | undefined = (option?.id ? (option.id as string) : setting.id);
                             return (<div key={`${index}-${asString(option[asString(setting.valueField)])}`} 
                                 className={asString(isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
@@ -64,7 +69,7 @@ export const getDefaultControl = <T,>(
                                     disabled={disabled}
                                     ref={setting.refRequired ? handleRef(setting) : null}
                                     type="radio" name={setting.name} id={optionId} 
-                                    value={asString(option[asString(setting.valueField)])} checked={model[setting.key] === option[asString(setting.valueField)]} 
+                                    value={asString(option[asString(setting.valueField)])} checked={value === option[asString(setting.valueField)]} 
                                     onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
                                 <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={optionId}>
                                     {asString(option[asString(setting.labelField)])}
@@ -81,7 +86,7 @@ export const getDefaultControl = <T,>(
                         disabled={disabled}
                         ref={setting.refRequired ? handleRef(setting) : null}
                         name={setting.name} id={setting.id} 
-                        checked={isUndefinedOrNull(model[setting.key]) ? false : (model[setting.key] as boolean)} 
+                        checked={isUndefinedOrNull(value) ? false : (value as boolean)} 
                         onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
                 {setting.label && (
                     <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={setting.id}>
@@ -116,7 +121,7 @@ export const getDefaultControl = <T,>(
           <input {...setting.controlProps || {type: 'text'}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)} placeholder={setting.placeholder} 
               disabled={disabled}
               ref={setting.refRequired ? handleRef(setting) : null}
-              id={setting.id} name={setting.name} value={isUndefinedOrNull(model[setting.key]) ? '' : (model[setting.key] as string)} 
+              id={setting.id} name={setting.name} value={isUndefinedOrNull(value) ? '' : (value as string)} 
               onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
       )
     };
@@ -134,37 +139,16 @@ const getSelectOptions = <T,>(setting: FormControlType<T>) => {
                     {asString(option)}
                 </option>
             ))}
-            {!isOptionString && setting.options?.map((option, index) => (
-                <option key={`${index}-${asString(option[asString(setting.valueField)])}`} value={asString(option[asString(setting.valueField)])}>
-                    {asString(option[asString(setting.labelField)])}
-                </option>
-            ))}
+            {!isOptionString && setting.options?.map((optionParam, index) => {
+                const option: Record<string, unknown> = optionParam as Record<string, unknown>;
+                return (
+                    <option key={`${index}-${asString(option[asString(setting.valueField)])}`} value={asString(option[asString(setting.valueField)])}>
+                        {asString(option[asString(setting.labelField)])}
+                    </option>
+                );
+            })}
         </>
     );
-};
-
-
-const getRadioOptions = <T,>(setting: FormControlType<T>) => {
-    let isOptionString = getOptions(setting);
-    return (
-        <>
-            {setting.options?.map((option, index) => (
-                <>
-                    {isOptionString && (
-                        <option key={`${index}-${option}`} value={asString(option)}>
-                            {asString(option)}
-                        </option>
-                    )}
-                    {!isOptionString && (
-                        <option key={`${index}-${option[asString(setting.valueField)]}`} value={asString(option[asString(setting.valueField)])}>
-                            {asString(option[asString(setting.labelField)])}
-                        </option>
-                    )}
-                </>
-                
-            ))}
-        </>
-    )
 };
 
 const getOptions = <T,>(setting: FormControlType<T>) => {
@@ -227,6 +211,7 @@ export const renderControl =<T,>(
     const controlType = setting.type.toLowerCase();
     if(controlType === 'component' && setting.component) {
         const disabled = asBoolean(evaluateExpression(setting.disabled, model, false));
+        const value = model[setting.key as keyof T];
         const DynamicComponent = setting.component;
         return (
             <DynamicComponent
@@ -236,7 +221,7 @@ export const renderControl =<T,>(
                 ref={setting.refRequired ? handleRef(setting) : undefined}
                 id={setting.id}
                 name={setting.name}
-                value={model[setting.key]}
+                value={value}
                 model={model}
                 onChange={(e: any) => handleChange(e, setting)}
             />

@@ -58,11 +58,12 @@ export const Validators = {
     }
 };*/
 
-import { ValidationRule, ValidatorType } from "./types";
+
+import { ValidationRule, ValidatorType } from "../interfaces/validationTypes";
 import { isUndefinedOrNull } from "./utils";
 
 export const Validators = {
-    required: <T extends { [key: string]: string }, K extends string | undefined | null>(message?: string): ValidatorType<T, K> => ({
+    required: <T extends Record<string, any>, K extends string | undefined | null>(message?: string): ValidatorType<T, K> => ({
         type: "required",
         validate: (value: K, model: T, key: keyof T): ValidationRule => {
             const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);
@@ -74,7 +75,7 @@ export const Validators = {
             };
         }
     }),
-    minLength: <T extends { [key: string]: any }, K extends string | undefined | null>(minLength: number, message?: string): ValidatorType<T, K> => ({
+    minLength: <T extends Record<string, any>, K extends string | undefined | null>(minLength: number, message?: string): ValidatorType<T, K> => ({
         type: "minLength",
         validate: (value: K, model: T, key: keyof T): ValidationRule => {
             const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);
@@ -88,7 +89,7 @@ export const Validators = {
             };
         }
     }),
-    email: <T extends { [key: string]: string }, K extends string | undefined | null>(message?: string): ValidatorType<T, K> => ({
+    email: <T extends Record<string, any>, K extends string | undefined | null>(message?: string): ValidatorType<T, K> => ({
         type: "email",
         validate: (value: K, model: T, key: keyof T): ValidationRule => {
             const val: string = isUndefinedOrNull(value) ? (model[key] as string) : (value as string);

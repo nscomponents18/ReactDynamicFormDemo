@@ -1,6 +1,5 @@
 import ToggleSwitch from "../../component/toggleSwitch/toggleSwitch";
-import { ColClassesType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig } from "../../dynamicForm/types";
-import { Validators } from "../../dynamicForm/validators";
+import { ColClassesType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig, Validators } from "../../dynamicForm";
 
 export interface ICheckoutTailwind {
     firstName: string;
@@ -62,7 +61,7 @@ export const getCustomControlsTailwind: CustomControlCallback<ICheckoutTailwind>
                 className="flex-1 py-2 px-4 border border-gray-300 rounded-r-lg focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder={setting.placeholder}
                 disabled={setting.disabled}
-                value={model[setting.key] as string}
+                value={model[setting.key as keyof ICheckoutTailwind] as string}
                 onChange={e => handleChange(e, setting)}
                 required={setting.required}
             />
@@ -72,20 +71,20 @@ export const getCustomControlsTailwind: CustomControlCallback<ICheckoutTailwind>
     return <ToggleSwitch 
             disabled={setting.disabled}
             name={setting.name} id={setting.id} 
-            checked={(model[setting.key] as boolean)} 
+            checked={(model[setting.key as keyof ICheckoutTailwind] as boolean)} 
             onChange={(e: boolean) => handleChange(e, setting)}  />
   }
   return null;
 };
 
-export const getHeaderForCheckoutTailwind = () : HeaderConfig => {
+export const getHeaderForCheckoutTailwind = () : HeaderConfig<ICheckoutTailwind> => {
     return {
         title: 'Billing Address',
         cssTitleCon: 'w-100'
     }
 };
 
-export const getFooterForCheckoutTailwind = () : FooterConfig => {
+export const getFooterForCheckoutTailwind = () : FooterConfig<ICheckoutTailwind> => {
     return { 
       footerComp: (
         <button className="w-full bg-blue-500 text-white py-3 px-6 rounded leading-tight hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" type="submit">Continue to checkout</button>
@@ -93,7 +92,7 @@ export const getFooterForCheckoutTailwind = () : FooterConfig => {
     };
 };
 
-export const getFormConfigForCheckoutTailwind = (): FormConfigType => {
+export const getFormConfigForCheckoutTailwind = (): FormConfigType<ICheckoutTailwind> => {
     const textInputStyle = "w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-500 focus:border-blue-500";
   return {
       containerClass: "container py-2 border border-solid con needs-validation",

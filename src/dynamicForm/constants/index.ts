@@ -1,4 +1,4 @@
-import { inFraction } from "./utils";
+import { inFraction } from "../utils/utils";
 
 export const CONTAINER_INITIAL = 'css';
 export const LABEL_INITIAL = CONTAINER_INITIAL + 'label';

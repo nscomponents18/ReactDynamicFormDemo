@@ -1,11 +1,14 @@
 import React from 'react';
-import { renderSides } from './controlsHelper';
-import { CustomControlCallback, ErrorType, FormControlType, HeaderConfig } from './types';
-import { asString, getClassNames } from './utils';
+import { renderSides } from '../utils/controlsHelper';
+import { asString, getClassNames } from '../utils/utils';
+import { HeaderConfig } from '../interfaces/headerConfig';
+import { ErrorType } from '../interfaces/validationTypes';
+import { CustomControlCallback } from '../interfaces/customControlCallback';
+import { FormControlType } from '../interfaces/formControlType';
 
 interface HeaderControlProps<T> {
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>;
-    header?: HeaderConfig;
+    header?: HeaderConfig<T>;
     model: T;
     errors: ErrorType;
     getCustomControls?: CustomControlCallback<T>;

@@ -1,5 +1,8 @@
-import { CONTAINER_INITIAL } from "./constants";
-import { ColClassesType, ErrorType, FormControlType } from "./types";
+import { CONTAINER_INITIAL } from "../constants";
+import { ColClassesType } from "../interfaces/colClassesType";
+import { ColumnType } from "../interfaces/columnType";
+import { FormControlType } from "../interfaces/formControlType";
+import { ErrorType } from "../interfaces/validationTypes";
 
 
 export const isUndefinedOrNull = (value: unknown): value is null | undefined => {
@@ -196,6 +199,25 @@ export const evaluateExpression = <T,>(expression: string | boolean | undefined 
     }
   }
   return defaultValue;
+};
+
+export function findFormControl<T>(columns: ColumnType<T>[], key: string): FormControlType<T> | null {
+  for (const column of columns) {
+      if (column.rows) {
+          for (const row of column.rows) {
+              if (row.key === key) {
+                  return row;
+              }
+          }
+      }
+      if (column.columns) {
+          const result = findFormControl(column.columns, key);
+          if (result) {
+              return result;
+          }
+      }
+  }
+  return null;
 };
 
 

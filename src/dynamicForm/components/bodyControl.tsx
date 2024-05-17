@@ -1,12 +1,16 @@
 import React from 'react';
-import { getControl } from './controlsHelper';
+import { getControl } from '../utils/controlsHelper';
 import FormControl from './formControl';
-import { ColumnType, CustomControlCallback, ErrorType, FormConfigType, FormControlType } from './types';
-import { asBoolean, asString, evaluateExpression, getClassNames, getContainerColumnClassName, isUndefined } from './utils';
+import { asBoolean, asString, evaluateExpression, getClassNames, getContainerColumnClassName, isUndefined } from '../utils/utils';
+import { FormConfigType } from '../interfaces/formConfigType';
+import { CustomControlCallback } from '../interfaces/customControlCallback';
+import { FormControlType } from '../interfaces/formControlType';
+import { ErrorType } from '../interfaces/validationTypes';
+import { ColumnType } from '../interfaces/columnType';
 
 interface BodyControlProps<T> {
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>;
-    body: FormConfigType;
+    body: FormConfigType<T>;
     model: T;
     errors: ErrorType;
     getCustomControls?: CustomControlCallback<T>;
@@ -21,7 +25,7 @@ const BodyControl = <T extends {}>({ cssDefaults, body, model, getCustomControls
     const isLabelControlsHorizontal: boolean = asBoolean(cssDefaults.isLabelControlsHorizontal);
     const cssBody: Record<string,unknown> = cssDefaults.body as Record<string,unknown>;
 
-    const renderRows = (rows: FormControlType<T>[] | undefined, column: ColumnType) => {
+    const renderRows = (rows: FormControlType<T>[] | undefined, column: ColumnType<T>) => {
         return (
             <>
                 {rows && rows.length > 0 && (
@@ -38,10 +42,10 @@ const BodyControl = <T extends {}>({ cssDefaults, body, model, getCustomControls
         )
     };
 
-    const renderColumn = (columns: ColumnType[] | undefined) => {
+    const renderColumn = (columns: ColumnType<T>[] | undefined) => {
         return (
             <>
-                {columns && columns.map((column: ColumnType, parentIndex: number) => (
+                {columns && columns.map((column: ColumnType<T>, parentIndex: number) => (
                     <>
                         {(isUndefined(column.hide) || !evaluateExpression(column.hide, model, true)) && (
                             <div key={parentIndex} className={getContainerColumnClassName(column, asString(cssDefaults.cssClassInitial))}>
@@ -55,7 +59,7 @@ const BodyControl = <T extends {}>({ cssDefaults, body, model, getCustomControls
                                     <>
                                         {
                                             (() => {
-                                                const setting: FormControlType<T>  = {...{type: column.type, key: column.type as keyof T}, ...column};
+                                                const setting: FormControlType<T>  = {...{type: column.type, key: column.type}, ...column};
                                                 return getControl(cssDefaults, column.type, model, -1, errors, handleChange, handleRef, handleClick, setting, setting, getCustomControls);
                                             })()
                                         }

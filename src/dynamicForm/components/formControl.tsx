@@ -1,8 +1,11 @@
 import React from 'react';
-import { CONTROL_INITIAL, LABEL_INITIAL } from './constants';
-import { renderControl } from './controlsHelper';
-import { ColClassesType, CustomControlCallback, ErrorType, FormControlType } from './types';
-import { asString, doRenderLabel, evaluateExpression, getClassNames, getContainerColumnClassName, getControlClassName, isUndefined } from './utils';
+import { renderControl } from '../utils/controlsHelper';
+import { asString, doRenderLabel, evaluateExpression, getClassNames, getContainerColumnClassName, getControlClassName, isUndefined } from '../utils/utils';
+import { FormControlType } from '../interfaces/formControlType';
+import { ColClassesType } from '../interfaces/colClassesType';
+import { CustomControlCallback } from '../interfaces/customControlCallback';
+import { ErrorType } from '../interfaces/validationTypes';
+import { CONTROL_INITIAL, LABEL_INITIAL } from '../constants';
 
 interface FormControlProps<T> {
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>,
@@ -31,8 +34,7 @@ const FormControl = <T extends {}>({cssDefaults, cssMap, handleChange, handleRef
                         <div key={controlIndex} className={`control-${key} ${getContainerColumnClassName(setting, asString(cssDefaults.cssClassInitial))}`}>
                             <div className={getClassNames(asString(cssMap.horizontalControlsContainer), setting.containerClass)}>
                                 {doRenderLabel(setting) && (
-                                    <label htmlFor={setting.name} className={`${asString(cssMap.horizontalLabel)} 
-                                        ${getControlClassName(setting, parentSetting, LABEL_INITIAL, asString(cssDefaults.cssClassInitial))}`}>
+                                    <label htmlFor={setting.name} className={`${asString(cssMap.horizontalLabel)} ${getControlClassName(setting, parentSetting, LABEL_INITIAL, asString(cssDefaults.cssClassInitial))} ${getClassNames(null, setting.labelclass)}`}>
                                         {setting.label}
                                     </label>
                                 )}
@@ -52,7 +54,7 @@ const FormControl = <T extends {}>({cssDefaults, cssMap, handleChange, handleRef
                         <div key={controlIndex} className={`control-${key} ${getContainerColumnClassName(setting, asString(cssDefaults.cssClassInitial))}`}>
                             <div className={getClassNames(asString(cssMap.verticalControlsContainer), setting.containerClass)}>
                                 {doRenderLabel(setting) && (
-                                    <label htmlFor={setting.name} className={asString(cssMap.verticalLabel)}>
+                                    <label htmlFor={setting.name} className={getClassNames(asString(cssMap.verticalLabel), setting.labelclass)}>
                                         {setting.label}
                                     </label>
                                 )}
