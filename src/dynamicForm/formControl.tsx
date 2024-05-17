@@ -2,7 +2,7 @@ import React from 'react';
 import { CONTROL_INITIAL, LABEL_INITIAL } from './constants';
 import { renderControl } from './controlsHelper';
 import { ColClassesType, CustomControlCallback, ErrorType, FormControlType } from './types';
-import { asString, doRenderLabel, evaluateExpression, getContainerColumnClassName, getControlClassName, isUndefined } from './utils';
+import { asString, doRenderLabel, evaluateExpression, getClassNames, getContainerColumnClassName, getControlClassName, isUndefined } from './utils';
 
 interface FormControlProps<T> {
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>,
@@ -25,11 +25,11 @@ const FormControl = <T extends {}>({cssDefaults, cssMap, handleChange, handleRef
     const key: string = String(setting.key);
     return (
         <>
-            {(isUndefined(setting.hide) || !evaluateExpression(setting.hide, model, true)) && (
+            {(isUndefined(setting.hide) || !evaluateExpression(setting.hide, model, false)) && (
                 <>
                     {isLabelControlsHorizontal && (
                         <div key={controlIndex} className={`control-${key} ${getContainerColumnClassName(setting, asString(cssDefaults.cssClassInitial))}`}>
-                            <div className={asString(cssMap.horizontalControlsContainer)}>
+                            <div className={getClassNames(asString(cssMap.horizontalControlsContainer), setting.containerClass)}>
                                 {doRenderLabel(setting) && (
                                     <label htmlFor={setting.name} className={`${asString(cssMap.horizontalLabel)} 
                                         ${getControlClassName(setting, parentSetting, LABEL_INITIAL, asString(cssDefaults.cssClassInitial))}`}>
@@ -50,7 +50,7 @@ const FormControl = <T extends {}>({cssDefaults, cssMap, handleChange, handleRef
                     )}
                     {!isLabelControlsHorizontal && (
                         <div key={controlIndex} className={`control-${key} ${getContainerColumnClassName(setting, asString(cssDefaults.cssClassInitial))}`}>
-                            <div className={asString(cssMap.verticalControlsContainer)}>
+                            <div className={getClassNames(asString(cssMap.verticalControlsContainer), setting.containerClass)}>
                                 {doRenderLabel(setting) && (
                                     <label htmlFor={setting.name} className={asString(cssMap.verticalLabel)}>
                                         {setting.label}

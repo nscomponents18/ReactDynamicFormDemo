@@ -48,8 +48,8 @@ export const getContainerColumnClassName = (colClassesType: ColClassesType, clas
 export const getControlClassName = (colClassesType: ColClassesType, parentColClassesType: ColClassesType, cssInitial: string, classInitial: string): string => {
   let cssClass: string[] = [];
   cssClass = getClassNamesForInitails(colClassesType, parentColClassesType, cssInitial, classInitial);
-  if(colClassesType.containerclass) {
-    cssClass.push(colClassesType.containerclass);
+  if(colClassesType.controlcontainerclass) {
+    cssClass.push(colClassesType.controlcontainerclass);
   }
   return cssClass.join(' ');
 };
@@ -178,7 +178,7 @@ export const evaluateExpression = <T,>(expression: string | boolean | undefined 
     defaultValue = false;
   }
   if(isUndefinedOrNull(expression)) {
-    return false;
+    return defaultValue;
   }
   if(isBoolean(expression)) {
     return asBoolean(expression);

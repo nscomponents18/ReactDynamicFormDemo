@@ -70,7 +70,9 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
             if(column.rows && column.rows.length > 0) {
                 column.rows.map((setting: FormControlType<T>) => {
                     let validators: ValidatorType<T, any>[] | undefined = setting.validators;
-                    if(setting.required) {
+                    //not adding as we dont know if users want to add there own validators and also required property can be a equation hence 
+                    //we dont know if users added Validators.required() or below code did it.
+                    /*if(setting.required) {
                         if(!validators || validators.length === 0) {
                             validators = [];
                         }
@@ -85,7 +87,7 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
                             //making required 1st Validator
                             validators = [Validators.required(), ...validators];
                         }
-                    }
+                    }*/
                     if(validators && validators.length > 0) {
                         const key: keyof T = setting.key;
                         const value = model[key];
