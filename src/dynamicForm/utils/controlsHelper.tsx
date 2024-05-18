@@ -191,9 +191,6 @@ export const getControl = <T,>(
     const isLabelControlsHorizontal: boolean = asBoolean(cssDefaults.isLabelControlsHorizontal);
     const disabled = asBoolean(evaluateExpression(setting.disabled, model, false)); 
     const required = asBoolean(evaluateExpression(setting.required, model, false));
-    if(setting.key === 'manager[0].name') {
-        console.log("here");
-    }
     let value = null;
     if(containsSpecialCharacter(setting.key)) {
         value = (evaluateExpression(setting.key, model, null, EVALUATE_EXPRESSION_ERROR_VALUE) as T[keyof T] | null | undefined);
