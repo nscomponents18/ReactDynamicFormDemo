@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import React from "react";
 import { ColClassesType } from "./colClassesType";
 import { ValidatorType } from "./validationTypes";
 
@@ -7,8 +7,8 @@ export interface FormControlType<T> extends ColClassesType {
     type: string;
     id?: string;
     name?: string;
-    label?: string;
-    onChange?: (event: ChangeEvent<any> | unknown,value: string | boolean, model: T) => void;
+    label?: string | React.ReactNode;
+    onChange?: (event: React.ChangeEvent<any> | unknown,value: string | boolean, model: T) => void;
     options?: Record<string, unknown>[] | string[];
     labelField?: string;
     valueField?: string;

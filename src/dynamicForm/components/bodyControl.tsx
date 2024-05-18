@@ -47,7 +47,7 @@ const BodyControl = <T extends {}>({ cssDefaults, body, model, getCustomControls
             <>
                 {columns && columns.map((column: ColumnType<T>, parentIndex: number) => (
                     <>
-                        {(isUndefined(column.hide) || !evaluateExpression(column.hide, model, true)) && (
+                        {(isUndefined(column.hide) || !evaluateExpression(column.hide, model, false)) && (
                             <div key={parentIndex} className={getContainerColumnClassName(column, asString(cssDefaults.cssClassInitial))}>
                                 {(column.columns && column.columns.length > 0) && (
                                     <div key={parentIndex} className={getClassNames(asString(cssBody.horizontalAllControlsContainer), column.horizontalAllControlsClass)}>

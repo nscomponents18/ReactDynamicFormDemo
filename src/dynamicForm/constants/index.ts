@@ -4,6 +4,7 @@ export const CONTAINER_INITIAL = 'css';
 export const LABEL_INITIAL = CONTAINER_INITIAL + 'label';
 export const CONTROL_INITIAL = CONTAINER_INITIAL + 'control';
 export const DEFAULT_LABEL_FIELD = 'label';
+export const EVALUATE_EXPRESSION_ERROR_VALUE = 'dynamicFormEvaluateExpressionError'
 
 export const CSS_FRAMEWORK: Record<string, Record<string,string | boolean | Record<string,unknown>>> = {
     bootstrap: {

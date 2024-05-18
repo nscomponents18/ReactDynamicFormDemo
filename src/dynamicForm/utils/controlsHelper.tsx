@@ -1,10 +1,11 @@
 import React, { ChangeEvent } from 'react';
-import { asBoolean, asString, evaluateExpression, getClassNameForControl, getClassNames, getKeyForControlMap, isString, isUndefinedOrNull } from './utils';
+import { asBoolean, asString, containsSpecialCharacter, evaluateExpression, getClassNameForControl, getClassNames, getKeyForControlMap, isString, isUndefinedOrNull } from './utils';
 import { ErrorType } from '../interfaces/validationTypes';
 import { FormControlType } from '../interfaces/formControlType';
 import { ColClassesType } from '../interfaces/colClassesType';
-import { DEFAULT_LABEL_FIELD } from '../constants';
+import { DEFAULT_LABEL_FIELD, EVALUATE_EXPRESSION_ERROR_VALUE } from '../constants';
 import { CustomControlCallback } from '../interfaces/customControlCallback';
+import { CalculatedFields } from '../interfaces/calculatedFields';
 
 export const getDefaultControl = <T,>(
     cssDefaults: Record<string,string | boolean | Record<string,unknown>>,
@@ -16,18 +17,16 @@ export const getDefaultControl = <T,>(
     handleRef: (setting: FormControlType<T>) => (node: any) => void,
     handleClick: (event: React.MouseEvent<HTMLElement>, setting: FormControlType<T>) => void,
     setting: FormControlType<T>,
-    parentSetting: ColClassesType | null
+    parentSetting: ColClassesType | null,
+    calcFields: CalculatedFields<T>
   ): JSX.Element => {
-    const isLabelControlsHorizontal: boolean = asBoolean(cssDefaults.isLabelControlsHorizontal);
-    const disabled = asBoolean(evaluateExpression(setting.disabled, model, false)); 
-    const required = asBoolean(evaluateExpression(setting.required, model, false));
-    const value = model[setting.key as keyof T];
+    
     const controls: { [key: string]: JSX.Element } = {
       'select': (
-          <select {...setting.controlProps || {}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)} disabled={disabled}
+          <select {...setting.controlProps || {}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)} disabled={calcFields.disabled}
               ref={setting.refRequired ? handleRef(setting) : null}
-              id={setting.id} name={setting.name} value={isUndefinedOrNull(value) ? '' : (value as string)}
-              onChange={e => handleChange(e as ChangeEvent<HTMLSelectElement>, setting)} required={required}>
+              id={setting.id} name={setting.name} value={isUndefinedOrNull(calcFields.value) ? '' : (calcFields.value as string)}
+              onChange={e => handleChange(e as ChangeEvent<HTMLSelectElement>, setting)} required={calcFields.required}>
               {getSelectOptions(setting)}
           </select>
         ),
@@ -36,23 +35,30 @@ export const getDefaultControl = <T,>(
         //from https://www.w3schools.com/html/html_form_input_types.asp
         'text,number,email,color,date,datetime-local,file,hidden,image,month,password,range,reset,search,tel,time,url,week': (
           <input {...setting.controlProps || {}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)} type={setting.type}
-              placeholder={setting.placeholder} disabled={disabled}
+              placeholder={setting.placeholder} disabled={calcFields.disabled}
               ref={setting.refRequired ? handleRef(setting) : null}
-              id={setting.id} name={setting.name} value={isUndefinedOrNull(value) ? '' : (value as string) }
-              onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
+              id={setting.id} name={setting.name} value={isUndefinedOrNull(calcFields.value) ? '' : (calcFields.value as string) }
+              onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={calcFields.required} />
+        ),
+        'textarea': (
+            <textarea {...setting.controlProps || {}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)}
+                placeholder={setting.placeholder} disabled={calcFields.disabled}
+                ref={setting.refRequired ? handleRef(setting) : null}
+                id={setting.id} name={setting.name} value={isUndefinedOrNull(calcFields.value) ? '' : (calcFields.value as string) }
+                onChange={e => handleChange(e as ChangeEvent<HTMLTextAreaElement>, setting)} required={calcFields.required} />
         ),
         'radio': (
             <>
                 {getOptions(setting) ? (
                     setting.options?.map((option, index) => (
                         <div key={`${index}-${option}`} 
-                            className={asString(isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
+                            className={asString(calcFields.isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
                             <input {...(setting.controlProps || {})} className={getClassNameForControl(asString(cssDefaults.checkBoxRadio), setting, errors)}
-                                disabled={disabled}
+                                disabled={calcFields.disabled}
                                 ref={setting.refRequired ? handleRef(setting) : null}
                                 type="radio" name={setting.name} id={setting.id} 
-                                value={asString(option)} checked={value === option} 
-                                onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
+                                value={asString(option)} checked={calcFields.value === option} 
+                                onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={calcFields.required} />
                             <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={setting.id}>
                                 {asString(option)}
                             </label>
@@ -63,14 +69,14 @@ export const getDefaultControl = <T,>(
                             const option: Record<string, unknown> = optionParam as Record<string, unknown>;
                             const optionId: string | undefined = (option?.id ? (option.id as string) : setting.id);
                             return (<div key={`${index}-${asString(option[asString(setting.valueField)])}`} 
-                                className={asString(isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
+                                className={asString(calcFields.isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
                                 <input {...(setting.controlProps || {})} className={getClassNameForControl(asString(cssDefaults.checkBoxRadio), setting, errors)
                                     }
-                                    disabled={disabled}
+                                    disabled={calcFields.disabled}
                                     ref={setting.refRequired ? handleRef(setting) : null}
                                     type="radio" name={setting.name} id={optionId} 
-                                    value={asString(option[asString(setting.valueField)])} checked={value === option[asString(setting.valueField)]} 
-                                    onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
+                                    value={asString(option[asString(setting.valueField)])} checked={calcFields.value === option[asString(setting.valueField)]} 
+                                    onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={calcFields.required} />
                                 <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={optionId}>
                                     {asString(option[asString(setting.labelField)])}
                                 </label>
@@ -81,13 +87,13 @@ export const getDefaultControl = <T,>(
             </>
         ),    
       'checkbox': (
-            <div className={asString(isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
+            <div className={asString(calcFields.isLabelControlsHorizontal ? cssDefaults.checkBoxContinerHorizontal : cssDefaults.checkBoxContinerVertical)}>
                 <input {...setting.controlProps || {}} type="checkbox" className={getClassNameForControl(asString(cssDefaults.checkBoxRadio), setting, errors)}
-                        disabled={disabled}
+                        disabled={calcFields.disabled}
                         ref={setting.refRequired ? handleRef(setting) : null}
                         name={setting.name} id={setting.id} 
-                        checked={isUndefinedOrNull(value) ? false : (value as boolean)} 
-                        onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
+                        checked={isUndefinedOrNull(calcFields.value) ? false : (calcFields.value as boolean)} 
+                        onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={calcFields.required} />
                 {setting.label && (
                     <label className={asString(cssDefaults.checkBoxLabel)} htmlFor={setting.id}>
                         {setting.label}
@@ -110,7 +116,7 @@ export const getDefaultControl = <T,>(
       ),
       'button': (
             <button {...setting.controlProps || {}} className={getClassNameForControl('btn', setting, errors)}
-                disabled={disabled}
+                disabled={calcFields.disabled}
                 ref={setting.refRequired ? handleRef(setting) : null}
                 name={setting.name} id={setting.id}
                 onClick={e => handleClick(e, setting)}>
@@ -119,10 +125,10 @@ export const getDefaultControl = <T,>(
       ),
       'default': (
           <input {...setting.controlProps || {type: 'text'}} className={getClassNameForControl(asString(cssDefaults.control), setting, errors)} placeholder={setting.placeholder} 
-              disabled={disabled}
+              disabled={calcFields.disabled}
               ref={setting.refRequired ? handleRef(setting) : null}
-              id={setting.id} name={setting.name} value={isUndefinedOrNull(value) ? '' : (value as string)} 
-              onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={required} />
+              id={setting.id} name={setting.name} value={isUndefinedOrNull(calcFields.value) ? '' : (calcFields.value as string)} 
+              onChange={e => handleChange(e as ChangeEvent<HTMLInputElement>, setting)} required={calcFields.required} />
       )
     };
     const controlKey: string = getKeyForControlMap(controls, controlType);
@@ -182,11 +188,28 @@ export const getControl = <T,>(
     getCustomControls: CustomControlCallback<T> | undefined
   ): JSX.Element => {
     let control: JSX.Element | null = null;
+    const isLabelControlsHorizontal: boolean = asBoolean(cssDefaults.isLabelControlsHorizontal);
+    const disabled = asBoolean(evaluateExpression(setting.disabled, model, false)); 
+    const required = asBoolean(evaluateExpression(setting.required, model, false));
+    if(setting.key === 'manager[0].name') {
+        console.log("here");
+    }
+    let value = null;
+    if(containsSpecialCharacter(setting.key)) {
+        value = (evaluateExpression(setting.key, model, null, EVALUATE_EXPRESSION_ERROR_VALUE) as T[keyof T] | null | undefined);
+        if(value === EVALUATE_EXPRESSION_ERROR_VALUE) {
+            value = model[setting.key as keyof T];
+        }
+    }
+    else {
+        value = model[setting.key as keyof T];
+    }
+    const calcFields: CalculatedFields<T> = {isLabelControlsHorizontal, disabled, required, value};
     if(getCustomControls) {
-        control = getCustomControls(controlType, model, index, errors, handleChange, handleRef, handleClick, setting, parentSetting);
+        control = getCustomControls(controlType, model, index, errors, handleChange, handleRef, handleClick, setting, parentSetting, calcFields);
     }
     if(isUndefinedOrNull(control)) {
-        control = getDefaultControl(cssDefaults, controlType, model, index, errors, handleChange, handleRef, handleClick, setting, parentSetting);
+        control = getDefaultControl(cssDefaults, controlType, model, index, errors, handleChange, handleRef, handleClick, setting, parentSetting, calcFields);
         if (control) {
             return control;
         } else {

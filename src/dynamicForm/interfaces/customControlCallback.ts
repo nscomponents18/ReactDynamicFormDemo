@@ -1,3 +1,4 @@
+import { CalculatedFields } from "./calculatedFields";
 import { ColClassesType } from "./colClassesType";
 import { FormControlType } from "./formControlType";
 import { ErrorType } from "./validationTypes";
@@ -12,4 +13,5 @@ export type CustomControlCallback<T> = (
     handleClick: (event: React.MouseEvent<HTMLElement>, setting: FormControlType<T>) => void,
     setting: FormControlType<T>,
     parentSetting: ColClassesType | null,
+    calculatedFields: CalculatedFields<T>
 ) => JSX.Element | null;

@@ -6,9 +6,10 @@ export interface IDataType {
     role: string;
     gender: string;
     areyouworking: boolean;
+    manager?: Record<string, string>[];
 };
 
-export const defaultValDataType: IDataType = {employee: '', role: "Employee", gender: "female", areyouworking: false};
+export const defaultValDataType: IDataType = {employee: '', role: "Employee", gender: "female", areyouworking: false};//, manager: [{name: 'Tom'}]
 export const validateGender: ValidatorType<IDataType, string> = {
     type: "invalidGender",
     validate: (value: string, model: IDataType, key: keyof IDataType): ValidationRule => {
@@ -205,12 +206,16 @@ export const getDefaultFormConfig = (isHorizontalForm: boolean): FormConfigType<
                 {
                     csscolmd: 12,
                     cssmb: 4,
+                    csslabelcolsm: 4,
+                    csscontrolcolsm: 8,
                     rows: [
                         {
                             csscolmd: 6,
                             csscolsm: 6,
-                            type: "label",
-                            label: "Label 1",
+                            key: "manager[0].name",
+                            type: "text",
+                            label: "Manager Name",
+                            placeholder: "Enter Manager Name"
                         },
                         {
                             csscolsm: 6,

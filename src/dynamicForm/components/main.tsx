@@ -138,7 +138,23 @@ const DynamicForm = <T extends {}>({cssFramework, cssClassInitial, header, body,
         }
         const modelClone: T = { ...model };
         const key = setting.key as keyof T;
-        modelClone[key] = val;
+        //modelClone[key] = val;
+
+        const setValueByPath = (obj: any, path: string, value: any) => {
+            const keys = path.split(/[\.\[\]]/).filter(Boolean);
+            let temp = obj;
+            for (let i = 0; i < keys.length - 1; i++) {
+                const key = keys[i];
+                if (!(key in temp)) {
+                    // Create an empty object or array if the path does not exist
+                    temp[key] = isNaN(Number(keys[i + 1])) ? {} : [];
+                }
+                temp = temp[key];
+            }
+            temp[keys[keys.length - 1]] = value;
+        };
+        setValueByPath(modelClone, key as string, val);
+        
         if(onChange) {
             onChange(event, key, val, modelClone);
         }

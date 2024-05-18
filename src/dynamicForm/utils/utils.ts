@@ -176,10 +176,10 @@ export const inFraction = (numerator: number, denominator: number): string => {
   return `${simplifiedNumerator}/${simplifiedDenominator}`;
 };
 
-export const evaluateExpression = <T,>(expression: string | boolean | undefined | null, model: T, defaultValue?: string | boolean | number | undefined | null): unknown => {
-  if(isUndefinedOrNull(defaultValue)) {
+export const evaluateExpression = <T,>(expression: string | boolean | undefined | null, model: T, defaultValue?: string | boolean | number | undefined | null, errorValue?: string | boolean | number | undefined | null): unknown => {
+  /*if(isUndefinedOrNull(defaultValue)) {
     defaultValue = false;
-  }
+  }*/
   if(isUndefinedOrNull(expression)) {
     return defaultValue;
   }
@@ -195,29 +195,49 @@ export const evaluateExpression = <T,>(expression: string | boolean | undefined 
       return result;
     } catch (error) {
       console.error('Error evaluating expression:', error);
+      if(isUndefinedOrNull(errorValue)) {
+        return errorValue;
+      }
       return defaultValue;
     }
   }
   return defaultValue;
 };
 
-export function findFormControl<T>(columns: ColumnType<T>[], key: string): FormControlType<T> | null {
+export const findFormControl = <T,>(columns: ColumnType<T>[], key: string): FormControlType<T> | ColumnType<T> | null => {
   for (const column of columns) {
-      if (column.rows) {
-          for (const row of column.rows) {
-              if (row.key === key) {
-                  return row;
+    if(column.key === key) {
+      return column;
+    }
+    if (column.rows) {
+        for (const row of column.rows) {
+            if (row.key === key) {
+                return row;
+            }
+            if(row.columns) {
+              const result: FormControlType<T> | ColumnType<T> | null = findFormControl(row.columns, key);
+              if (result) {
+                  return result;
               }
-          }
-      }
-      if (column.columns) {
-          const result = findFormControl(column.columns, key);
-          if (result) {
-              return result;
-          }
-      }
+            }
+        }
+    }
+    if (column.columns) {
+        const result = findFormControl(column.columns, key);
+        if (result) {
+            return result;
+        }
+    }
   }
   return null;
+};
+
+export const containsSpecialCharacter = (str: string | undefined): boolean => {
+  if(str) {
+    const regex = /[!@#$%^&*(),.?":{}|<>[\]\\]/;
+    return regex.test(str);
+  }
+  return false;
 };
 
 

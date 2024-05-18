@@ -1,7 +1,7 @@
 import React from "react";
 
 import ToggleSwitch from '../../component/toggleSwitch/toggleSwitch';
-import { DynamicForm, ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig, FindFormControl } from '../../dynamicForm';
+import { DynamicForm, ColClassesType, ColumnType, CustomControlCallback, ErrorType, FooterConfig, FormConfigType, FormControlType, HeaderConfig, FindFormControl, CalculatedFields } from '../../dynamicForm';
 import { IDataType, defaultValDataType, getDefaultFooter, getDefaultFormConfig, getDefaultHeader } from './formConfig';
 import { CheckoutDefaultValue, ICheckout, getCustomControls, getFooterForCheckout, getFormConfigForCheckout, getHeaderForCheckout } from './formConfigCheckout';
 
@@ -128,12 +128,13 @@ const BootstrapDemo: React.FC = () => {
         handleClick: (event: React.MouseEvent<HTMLElement>, setting: FormControlType<IDataType>) => void,
         setting: FormControlType<IDataType>,
         parentSetting: ColClassesType | null,
+        calculatedFields: CalculatedFields<IDataType>
     ): JSX.Element | null => {
         if(controlType === 'toggleswitch') {
         return <ToggleSwitch 
-                disabled={setting.disabled}
+                disabled={calculatedFields.disabled}
                 name={setting.name} id={setting.id} 
-                checked={(model[setting.key as keyof IDataType] as boolean)} 
+                checked={(calculatedFields.value as boolean)} 
                 onChange={(e: boolean) => handleChange(e, setting)}  />
         }
         return null;

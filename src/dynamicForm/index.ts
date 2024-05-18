@@ -13,3 +13,4 @@ export * from './interfaces/formConfigType';
 export * from './interfaces/formControlType';
 export * from './interfaces/headerConfig';
 export * from './interfaces/validationTypes';
+export * from './interfaces/calculatedFields';
